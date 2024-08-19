@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "uade-battleship"
+version = "0.1.0"
+description = ""
+authors = ["Brian Valente <brian@valente.com.ar>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+black = "^24.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "uade_battleship.main:main"
