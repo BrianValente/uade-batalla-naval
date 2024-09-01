@@ -1,60 +1,36 @@
 import arcade
 
-from uade_battleship.utils import Suma
+from uade_battleship.views import MainMenuView
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 SCREEN_TITLE = "UADE Battleship"
-DEFAULT_LINE_HEIGHT = 45
-DEFAULT_FONT_SIZE = 20
 
 
-class MyGame(arcade.Window):
-    """Main application class."""
+class MainWindow(arcade.Window):
+    perf_graph = arcade.PerfGraph(
+        width=SCREEN_WIDTH // 4,
+        height=100,
+    )
 
     def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
+        arcade.enable_timings()
         arcade.set_background_color(arcade.color.ALMOND)
 
-    def setup(self):
-        """Set up the game here. Call this function to restart the game."""
-        pass
-
     def on_draw(self):
-        """Render the screen."""
-        # Clear the screen
-        self.clear()
+        super().on_draw()
+        self.perf_graph.draw()
 
-        resultado = Suma(1, 2)
-        start_x = 0
-        start_y = SCREEN_HEIGHT - DEFAULT_LINE_HEIGHT * 1.5
-        arcade.draw_text(
-            f"El resultado de 1 + 2 es {resultado}",
-            start_x,
-            start_y,
-            arcade.color.BLACK,
-            DEFAULT_FONT_SIZE * 2,
-            width=SCREEN_WIDTH,
-            align="center",
-        )
-
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        """Called when the user presses a mouse button."""
-        pass
-
-    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        """Called when the user presses a mouse button."""
-        pass
-
-    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
-        """User moves mouse"""
-        pass
+    def on_update(self, delta_time: float):
+        super().on_update(delta_time)
+        self.perf_graph.update_graph(delta_time)
 
 
 def main():
-    window = MyGame()
-    window.setup()
+    window = MainWindow()
+    menu_view = MainMenuView(window)
+    window.show_view(menu_view)
     arcade.run()
 
 
