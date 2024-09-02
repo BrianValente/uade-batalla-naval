@@ -1,22 +1,31 @@
 import PySimpleGUI as sg
+from random import randint
 
-# All the stuff inside your window.
-layout = [  [sg.Text("What's your name?")],
-            [sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Cancel')] ]
+def Battleship():
+    sg.theme('Dark Blue 3')
+    MAX_ROWS = MAX_COL = 10
+    # Start building layout with the top 2 rows that contain Text elements
+    layout =   [[sg.Text('BATTLESHIP', font='Default 25')],
+               [sg.Text(size=(15,1), key='-MESSAGE-', font='Default 20')]]
+    # Add the board, a grid a buttons
+    layout +=  [[sg.Button(str('O'), size=(4, 2), pad=(0,0), border_width=0, key=(row,col)) for col in range(MAX_COL)] for row in range(MAX_ROWS)]
+    # Add the exit button as the last row
+    layout +=  [[sg.Button('Exit', button_color=('white', 'red'))]]
 
-# Create the Window
-window = sg.Window('Hello Example', layout)
+    window = sg.Window('Battleship', layout)
 
-# Event Loop to process "events" and get the "values" of the inputs
-while True:
-    event, values = window.read()
+    while True:         # Loop del evento
+        event, values = window.read()
+        print(event, values)
+        if event in (None, 'Exit'):
+            break
+        if randint(1,10) < 5:           # simulación de golpe (h) o fallo (m)
+            window[event].update('H', button_color=('white','red'))
+            window['-MESSAGE-'].update('Hit')
+        else:
+            window[event].update('M', button_color=('white','black'))
+            window['-MESSAGE-'].update('Miss')
+    window.close()
 
-    # if user closes window or clicks cancel
-    if event == sg.WIN_CLOSED or event == 'Cancel':
-        break
-
-    print('Hello', values[0], '!')
-
-window.close()
+Battleship()
 
