@@ -1,39 +1,36 @@
 import pygame
 
-# inicio de libreria
-pygame.init()
-
 
 # funciones del juego
-def CreateGameGrid(rows, cols, cellsize, pos):
-    startX = pos[0]
-    startY = pos[1]
-    coorGrid = []
-    for row in range(rows):
-        rowX = []
-        for col in range(cols):
-            rowX.append((startX, startY))
-            startX += cellsize  # Mueve hacia la derecha para la siguiente columna
-        coorGrid.append(rowX)
-        startX = pos[0]  # Resetea startX al inicio de la fila
-        startY += cellsize  # Mueve hacia abajo para la siguiente fila
-    return coorGrid
+def create_game_grid(rows, cols, cellsize, pos):
+    start_x = pos[0]
+    start_y = pos[1]
+    coor_grid = []
+    for _ in range(rows):
+        row_x = []
+        for _ in range(cols):
+            row_x.append((start_x, start_y))
+            start_x += cellsize  # Mueve hacia la derecha para la siguiente columna
+        coor_grid.append(row_x)
+        start_x = pos[0]  # Resetea startX al inicio de la fila
+        start_y += cellsize  # Mueve hacia abajo para la siguiente fila
+    return coor_grid
 
 
-def updateGameLogic(rows, cols):
+def update_game_logic(rows, cols):
     gamelogic = []
-    for row in range(rows):
-        rowX = []
-        for col in range(cols):
-            rowX.append(" ")
-        gamelogic.append(rowX)
+    for _ in range(rows):
+        row_x = []
+        for _ in range(cols):
+            row_x.append(" ")
+        gamelogic.append(row_x)
     return gamelogic
 
 
-def showGridOnScreen(window, cellsize, playerGrid, computerGrid):
-    grids = {"Player Grid": playerGrid, "Computer Grid": computerGrid}
+def show_grid_on_screen(window, cellsize, player_grid, computer_grid):
+    grids = {"Player Grid": player_grid, "Computer Grid": computer_grid}
 
-    for gridName, grid in grids.items():
+    for _, grid in grids.items():
         for row in grid:
             for col in row:
                 pygame.draw.rect(
@@ -41,18 +38,18 @@ def showGridOnScreen(window, cellsize, playerGrid, computerGrid):
                 )
 
 
-def printGameLogic():
+def print_game_logic(p_game_logic):
     print("Player Grid".center(50))
-    for _ in pGameLogic:
+    for _ in p_game_logic:
         print(_)
     print("Computer Grid".center(50))
-    for _ in cGameLogic:
+    for _ in p_game_logic:
         print(_)
 
 
-def updateGameScreen(window):
+def update_game_screen(window, p_game_grid, c_game_grid):
     window.fill((0, 0, 0))
-    showGridOnScreen(window, CELLSIZE, pGameGrid, cGameGrid)
+    show_grid_on_screen(window, CELLSIZE, p_game_grid, c_game_grid)
     pygame.display.update()
 
 
@@ -68,30 +65,38 @@ GRID_SPACING = 50
 SCREENWIDTH = (COLS * CELLSIZE) * 2 + GRID_SPACING + 100
 SCREENHEIGHT = ROWS * CELLSIZE + 100
 
-# Inicio de display pygame
-GAMESCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
-pygame.display.set_caption("Battleship game")
 
-# Posiciones iniciales de las grillas
-pGameGridStartPos = (50, 50)
-cGameGridStartPos = (50 + COLS * CELLSIZE + GRID_SPACING, 50)
+def main():
+    # inicio de libreria
+    pygame.init()
 
-# Variables del juego
-pGameGrid = CreateGameGrid(ROWS, COLS, CELLSIZE, pGameGridStartPos)
-pGameLogic = updateGameLogic(ROWS, COLS)
+    # Inicio de display pygame
+    GAMESCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
+    pygame.display.set_caption("Battleship game")
 
-cGameGrid = CreateGameGrid(ROWS, COLS, CELLSIZE, cGameGridStartPos)
-cGameLogic = updateGameLogic(ROWS, COLS)
+    # Posiciones iniciales de las grillas
+    p_game_grid_start_pos = (50, 50)
+    c_game_grid_start_pos = (50 + COLS * CELLSIZE + GRID_SPACING, 50)
 
-printGameLogic()
+    # Variables del juego
+    p_game_grid = create_game_grid(ROWS, COLS, CELLSIZE, p_game_grid_start_pos)
+    p_game_logic = update_game_logic(ROWS, COLS)
 
-# Loop del game
-RUNGAME = True
-while RUNGAME:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            RUNGAME = False
+    c_game_grid = create_game_grid(ROWS, COLS, CELLSIZE, c_game_grid_start_pos)
 
-    updateGameScreen(GAMESCREEN)
+    print_game_logic(p_game_logic)
 
-pygame.quit()
+    # Loop del game
+    RUNGAME = True
+    while RUNGAME:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                RUNGAME = False
+
+        update_game_screen(GAMESCREEN, p_game_grid, c_game_grid)
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
