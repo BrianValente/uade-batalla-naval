@@ -1,5 +1,6 @@
 import pygame
 
+
 def create_game_grid(rows, cols, cellsize, pos):
     start_x = pos[0]
     start_y = pos[1]
@@ -14,6 +15,7 @@ def create_game_grid(rows, cols, cellsize, pos):
         start_y += cellsize
     return coor_grid
 
+
 def update_game_logic(rows, cols):
     gamelogic = []
     for _ in range(rows):
@@ -23,26 +25,33 @@ def update_game_logic(rows, cols):
         gamelogic.append(row_x)
     return gamelogic
 
+
 def show_grid_on_screen(window, cellsize, player_grid):
     for row in player_grid:
         for col in row:
-            pygame.draw.rect(window, (255, 255, 255), (col[0], col[1], cellsize, cellsize), 1)
+            pygame.draw.rect(
+                window, (255, 255, 255), (col[0], col[1], cellsize, cellsize), 1
+            )
+
 
 def print_game_logic(p_game_logic):
     print("Player Grid".center(50))
     for row in p_game_logic:
         print(row)
 
+
 def update_game_screen(window, p_game_grid):
     window.fill((0, 51, 102))
     show_grid_on_screen(window, CELLSIZE, p_game_grid)
     pygame.display.update()
+
 
 ROWS = 10
 COLS = 10
 CELLSIZE = 30
 SCREENWIDTH = COLS * CELLSIZE + 100
 SCREENHEIGHT = ROWS * CELLSIZE + 100
+
 
 def board():
     pygame.init()
