@@ -1,12 +1,9 @@
 import os
 import pygame, sys
 
-from uade_battleship.board import board
+from uade_battleship.main_menu import main_menu
 
 pygame.init()
-
-SCREEN = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("Battleship game")
 
 BG = pygame.image.load("assets/Background.png")
 
@@ -16,12 +13,13 @@ def get_font(size):
 
 
 def play():
-    board()
+    main_menu()
 
 
-def single_screen():
+def portada():
     while True:
-        SCREEN.blit(BG, (0, 0))
+        screen = pygame.display.get_surface()
+        screen.blit(BG, (0, 0))
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
@@ -45,11 +43,11 @@ def single_screen():
             hovering_color="White",
         )
 
-        SCREEN.blit(MENU_TEXT, MENU_RECT)
-        SCREEN.blit(SUBTEXT, SUBTEXT_RECT)  # Renderizar el texto adicional
+        screen.blit(MENU_TEXT, MENU_RECT)
+        screen.blit(SUBTEXT, SUBTEXT_RECT)  # Renderizar el texto adicional
 
         PLAY_BUTTON.changeColor(MENU_MOUSE_POS)
-        PLAY_BUTTON.update(SCREEN)
+        PLAY_BUTTON.update(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -97,7 +95,3 @@ class Button:
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
-
-
-if __name__ == "__main__":
-    single_screen()
