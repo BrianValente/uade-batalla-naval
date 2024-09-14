@@ -7,28 +7,32 @@ from .main import main
 def draw_menu_button(window, color, font):
     global menu_button_rect
     texto = font.render("Menu", True, (255, 0, 255))
-    menu_button_rect = pygame.Rect(20, 20, texto.get_width() + 20, texto.get_height() + 10)
+    menu_button_rect = pygame.Rect(
+        20, 20, texto.get_width() + 20, texto.get_height() + 10
+    )
     pygame.draw.rect(window, color, menu_button_rect)
     window.blit(texto, (menu_button_rect.x + 10, menu_button_rect.y + 5))
+
 
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
 def show_menu_options(window, font):
     question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
     yes_text = font.render("Sí", True, (0, 150, 0))
     no_text = font.render("No", True, (150, 0, 0))
-    
+
     question_pos = (40, 100)
     yes_button_rect = pygame.Rect(40, 160, 50, 40)
     no_button_rect = pygame.Rect(120, 160, 50, 40)
-    
+
     pygame.draw.rect(window, (0, 255, 0), yes_button_rect)
     pygame.draw.rect(window, (255, 0, 0), no_button_rect)
-    
+
     window.blit(question_text, question_pos)
     window.blit(yes_text, (yes_button_rect.x + 10, yes_button_rect.y + 5))
     window.blit(no_text, (no_button_rect.x + 10, no_button_rect.y + 5))
-    
+
     return yes_button_rect, no_button_rect
+
 
 # Función para crear la grilla
 def create_game_grid(rows, cols, cellsize, pos):
@@ -45,6 +49,7 @@ def create_game_grid(rows, cols, cellsize, pos):
         start_y += cellsize
     return coor_grid
 
+
 # Función para inicializar la lógica del juego
 def update_game_logic(rows, cols):
     gamelogic = []
@@ -55,6 +60,7 @@ def update_game_logic(rows, cols):
         gamelogic.append(row_x)
     return gamelogic
 
+
 # Función para colocar barcos en la lógica del juego
 def colocar_barcos(logica_juego):
     MAX_ROWS = MAX_COL = len(logica_juego)
@@ -63,21 +69,24 @@ def colocar_barcos(logica_juego):
     for barco in barcos:
         colocado = False
         while not colocado:
-            orientacion = choice(['H', 'V'])  # Horizontal o Vertical
-            if orientacion == 'H':
+            orientacion = choice(["H", "V"])  # Horizontal o Vertical
+            if orientacion == "H":
                 fila = randint(0, MAX_ROWS - 1)
                 col = randint(0, MAX_COL - barco)
                 if all(logica_juego[fila][c] == " " for c in range(col, col + barco)):
                     for c in range(col, col + barco):
-                        logica_juego[fila][c] = 'B'  # 'B' representa una parte del barco
+                        logica_juego[fila][
+                            c
+                        ] = "B"  # 'B' representa una parte del barco
                     colocado = True
             else:
                 fila = randint(0, MAX_ROWS - barco)
                 col = randint(0, MAX_COL - 1)
                 if all(logica_juego[f][col] == " " for f in range(fila, fila + barco)):
                     for f in range(fila, fila + barco):
-                        logica_juego[f][col] = 'B'
+                        logica_juego[f][col] = "B"
                     colocado = True
+
 
 # Función para mostrar la grilla en pantalla
 def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
@@ -92,7 +101,10 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             else:
                 color = (255, 255, 255)  # Blanco para celdas no seleccionadas
             pygame.draw.rect(window, color, (col[0], col[1], cellsize, cellsize))
-            pygame.draw.rect(window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1)  # Borde de la celda
+            pygame.draw.rect(
+                window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
+            )  # Borde de la celda
+
 
 # Función para imprimir la lógica del juego en la consola
 def print_game_logic(p_game_logic):
@@ -100,9 +112,11 @@ def print_game_logic(p_game_logic):
     for row in p_game_logic:
         print(row)
 
+
 # Función para actualizar la pantalla del juego
 def update_game_screen(window, p_game_grid, p_game_logic):
     show_grid_on_screen(window, CELLSIZE, p_game_grid, p_game_logic)
+
 
 # Función para calcular el tamaño y la posición de la grilla
 def grid_size(window, rows, cols, cellsize):
@@ -113,23 +127,26 @@ def grid_size(window, rows, cols, cellsize):
     start_y = screen_height - grid_height - 50  # 50 píxeles desde la parte inferior
     return start_x, start_y
 
+
 # Función para manejar los clics del ratón
 def handle_mouse_click(mouse_pos, grid, cellsize, p_game_logic):
     for row_idx, row in enumerate(grid):
         for col_idx, col in enumerate(row):
             cell_rect = pygame.Rect(col[0], col[1], cellsize, cellsize)
             if cell_rect.collidepoint(mouse_pos):
-                if p_game_logic[row_idx][col_idx] == 'B':  # Clic en barco
+                if p_game_logic[row_idx][col_idx] == "B":  # Clic en barco
                     p_game_logic[row_idx][col_idx] = "X"  # Marca la celda como acertada
-                elif p_game_logic[row_idx][col_idx] == ' ':
+                elif p_game_logic[row_idx][col_idx] == " ":
                     p_game_logic[row_idx][col_idx] = "M"  # Marca la celda como fallo
                 print(f"Clicked on cell ({row_idx}, {col_idx})")
                 return  # Salir después del primer clic
+
 
 # Configuración inicial
 ROWS = 10
 COLS = 10
 CELLSIZE = 40
+
 
 def board():
     pygame.init()
@@ -156,9 +173,13 @@ def board():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
-                    ask_return_menu = not ask_return_menu  # Alternar la visibilidad del menú
+                    ask_return_menu = (
+                        not ask_return_menu
+                    )  # Alternar la visibilidad del menú
                 if ask_return_menu:
-                    yes_button_rect, no_button_rect = show_menu_options(GAMESCREEN, font)
+                    yes_button_rect, no_button_rect = show_menu_options(
+                        GAMESCREEN, font
+                    )
                     if yes_button_rect.collidepoint(mouse_pos):
                         main()
                     elif no_button_rect.collidepoint(mouse_pos):
@@ -169,16 +190,19 @@ def board():
         GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
 
         # Mostrar siempre el botón del menú
-        draw_menu_button(GAMESCREEN, (100, 100, 100), font)  
+        draw_menu_button(GAMESCREEN, (100, 100, 100), font)
 
         if ask_return_menu:
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
         else:
-            update_game_screen(GAMESCREEN, p_game_grid, p_game_logic)  # Mostrar la grilla del juego
+            update_game_screen(
+                GAMESCREEN, p_game_grid, p_game_logic
+            )  # Mostrar la grilla del juego
 
         pygame.display.update()
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     board()
