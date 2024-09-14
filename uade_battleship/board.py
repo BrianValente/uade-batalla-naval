@@ -1,7 +1,8 @@
 import pygame
 import subprocess  # Para ejecutar main.py
 from random import choice, randint
-from .main import main
+
+
 
 
 def draw_menu_button(window, color, font):
