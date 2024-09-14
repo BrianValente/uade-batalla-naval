@@ -1,22 +1,35 @@
 import pygame
+import subprocess  # Para ejecutar main.py
 from random import choice, randint
+from .main import main
 
-def menu(window, color, font):
+
+def draw_menu_button(window, color, font):
     global menu_button_rect
     texto = font.render("Menu", True, (255, 0, 255))
     menu_button_rect = pygame.Rect(20, 20, texto.get_width() + 20, texto.get_height() + 10)
     pygame.draw.rect(window, color, menu_button_rect)
     window.blit(texto, (menu_button_rect.x + 10, menu_button_rect.y + 5))
 
-#muestra el menú
-def show_menu(window, font):
-    menu_items = ["Volver al Menú Principal"]
-    menu_pos = (40, 100)  # Posición del menú
+# Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
+def show_menu_options(window, font):
+    question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
+    yes_text = font.render("Sí", True, (0, 150, 0))
+    no_text = font.render("No", True, (150, 0, 0))
+    
+    question_pos = (40, 100)
+    yes_button_rect = pygame.Rect(40, 160, 50, 40)
+    no_button_rect = pygame.Rect(120, 160, 50, 40)
+    
+    pygame.draw.rect(window, (0, 255, 0), yes_button_rect)
+    pygame.draw.rect(window, (255, 0, 0), no_button_rect)
+    
+    window.blit(question_text, question_pos)
+    window.blit(yes_text, (yes_button_rect.x + 10, yes_button_rect.y + 5))
+    window.blit(no_text, (no_button_rect.x + 10, no_button_rect.y + 5))
+    
+    return yes_button_rect, no_button_rect
 
-    for idx, item in enumerate(menu_items):
-        text = font.render(item, True, (255, 255, 255))
-        window.blit(text, (menu_pos[0], menu_pos[1] + idx * 40))
-        
 # Función para crear la grilla
 def create_game_grid(rows, cols, cellsize, pos):
     start_x = pos[0]
@@ -89,9 +102,7 @@ def print_game_logic(p_game_logic):
 
 # Función para actualizar la pantalla del juego
 def update_game_screen(window, p_game_grid, p_game_logic):
-    window.fill((0, 51, 102))
     show_grid_on_screen(window, CELLSIZE, p_game_grid, p_game_logic)
-    pygame.display.update()
 
 # Función para calcular el tamaño y la posición de la grilla
 def grid_size(window, rows, cols, cellsize):
@@ -134,11 +145,8 @@ def board():
 
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
-    show_menu_flag = False  # Inicialmente, el menú está oculto
+    ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
 
-    # Crear el rectángulo del botón del menú
-    menu_button_rect = pygame.Rect(20, 20, 100, 50)
-    
     RUNGAME = True
 
     while RUNGAME:
@@ -148,16 +156,23 @@ def board():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
-                    show_menu_flag = not show_menu_flag
+                    ask_return_menu = not ask_return_menu  # Alternar la visibilidad del menú
+                if ask_return_menu:
+                    yes_button_rect, no_button_rect = show_menu_options(GAMESCREEN, font)
+                    if yes_button_rect.collidepoint(mouse_pos):
+                        main()
+                    elif no_button_rect.collidepoint(mouse_pos):
+                        ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
                     handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
 
         GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
-        # Dibuja el botón del menú
-        menu(GAMESCREEN, (100, 100, 100), font)  # Color de fondo del botón
 
-        if show_menu_flag:
-            show_menu(GAMESCREEN, font)  # Mostrar el menú
+        # Mostrar siempre el botón del menú
+        draw_menu_button(GAMESCREEN, (100, 100, 100), font)  
+
+        if ask_return_menu:
+            show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
         else:
             update_game_screen(GAMESCREEN, p_game_grid, p_game_logic)  # Mostrar la grilla del juego
 
