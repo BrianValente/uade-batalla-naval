@@ -104,7 +104,13 @@ def main_menu():
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, CREDITS_BUTTON, HELP_BUTTON, QUIT_BUTTON]:
+        for button in [
+            PLAY_BUTTON,
+            OPTIONS_BUTTON,
+            CREDITS_BUTTON,
+            HELP_BUTTON,
+            QUIT_BUTTON,
+        ]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
@@ -147,12 +153,16 @@ class Button:
         screen.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+        if position[0] in range(self.rect.left, self.rect.right) and position[
+            1
+        ] in range(self.rect.top, self.rect.bottom):
             return True
         return False
 
     def changeColor(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+        if position[0] in range(self.rect.left, self.rect.right) and position[
+            1
+        ] in range(self.rect.top, self.rect.bottom):
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
@@ -160,8 +170,3 @@ class Button:
 
 if __name__ == "__main__":
     main_menu()
-
-
-
-
-

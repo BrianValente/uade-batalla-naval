@@ -8,8 +8,10 @@ from .portada import portada
 pygame.init()
 SCREEN = pygame.display.set_mode((1280, 720))
 
+
 def main():
     portada()
+
 
 if __name__ == "__main__":
     main()

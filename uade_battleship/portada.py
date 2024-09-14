@@ -8,7 +8,7 @@ pygame.init()
 BG = pygame.image.load("assets/Background.png")
 
 
-def get_font(size):  
+def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
 
 
