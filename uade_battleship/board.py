@@ -3,8 +3,6 @@ import subprocess  # Para ejecutar main.py
 from random import choice, randint
 
 
-
-
 def draw_menu_button(window, color, font):
     global menu_button_rect
     texto = font.render("Menu", True, (255, 0, 255))
