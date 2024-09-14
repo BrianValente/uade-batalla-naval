@@ -48,12 +48,12 @@ def options():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-                    main_menu()
+                    main()
 
         pygame.display.update()
 
 
-def main_menu():
+def main():
     while True:
         SCREEN.blit(BG, (0, 0))
 
@@ -146,4 +146,4 @@ class Button:
 
 
 if __name__ == "__main__":
-    main_menu()
+    main()
