@@ -149,7 +149,7 @@ CELLSIZE = 40
 
 def board():
     pygame.init()
-    GAMESCREEN = pygame.display.set_mode((800, 600))
+    GAMESCREEN = pygame.display.get_surface()
     pygame.display.set_caption("Battleship Game")
 
     p_game_grid_start_pos = grid_size(GAMESCREEN, ROWS, COLS, CELLSIZE)
