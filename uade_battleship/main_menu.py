@@ -3,15 +3,16 @@ import pygame, sys
 
 from uade_battleship.board import board
 
+pygame.display.set_caption("Menu")
+
 BG = pygame.image.load("assets/Background.png")
 
 
-def get_font(size):  # Returns Press-Start-2P in the desired size
+def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
 
 
 def play():
-    # TODO: Go to create game screen.
     board()
 
 
@@ -20,10 +21,9 @@ def options():
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
         screen = pygame.display.get_surface()
-
         screen.fill("white")
 
-        OPTIONS_TEXT = get_font(45).render("This is the OPTIONS screen.", True, "Black")
+        OPTIONS_TEXT = get_font(30).render("This is the OPTIONS screen.", True, "Black")
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
@@ -31,7 +31,7 @@ def options():
             image=None,
             pos=(640, 460),
             text_input="BACK",
-            font=get_font(75),
+            font=get_font(30),
             base_color="Black",
             hovering_color="Green",
         )
@@ -57,37 +57,59 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_TEXT = get_font(60).render("MENU", True, "#b68f40")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
         PLAY_BUTTON = Button(
-            image=pygame.image.load("assets/Play Rect.png"),
-            pos=(640, 250),
-            text_input="PLAY",
-            font=get_font(75),
+            image=None,
+            pos=(640, 200),
+            text_input="Comenzar partida",
+            font=get_font(30),
             base_color="#d7fcd4",
             hovering_color="White",
         )
         OPTIONS_BUTTON = Button(
-            image=pygame.image.load("assets/Options Rect.png"),
+            image=None,
+            pos=(640, 300),
+            text_input="Instrucciones de juego",
+            font=get_font(30),
+            base_color="#d7fcd4",
+            hovering_color="White",
+        )
+        CREDITS_BUTTON = Button(
+            image=None,
             pos=(640, 400),
-            text_input="OPTIONS",
-            font=get_font(75),
+            text_input="Configuraciones",
+            font=get_font(30),
+            base_color="#d7fcd4",
+            hovering_color="White",
+        )
+        HELP_BUTTON = Button(
+            image=None,
+            pos=(640, 500),
+            text_input="Scores",
+            font=get_font(30),
             base_color="#d7fcd4",
             hovering_color="White",
         )
         QUIT_BUTTON = Button(
-            image=pygame.image.load("assets/Quit Rect.png"),
-            pos=(640, 550),
-            text_input="QUIT",
-            font=get_font(75),
+            image=None,
+            pos=(640, 600),
+            text_input="Salir",
+            font=get_font(30),
             base_color="#d7fcd4",
             hovering_color="White",
         )
 
         screen.blit(MENU_TEXT, MENU_RECT)
 
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [
+            PLAY_BUTTON,
+            OPTIONS_BUTTON,
+            CREDITS_BUTTON,
+            HELP_BUTTON,
+            QUIT_BUTTON,
+        ]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(screen)
 
@@ -117,8 +139,10 @@ class Button:
         self.base_color, self.hovering_color = base_color, hovering_color
         self.text_input = text_input
         self.text = self.font.render(self.text_input, True, self.base_color)
-        if self.image is None:
-            self.image = self.text
+        text_width, text_height = self.text.get_size()
+        # Adjust button size to fit the text
+        self.image = pygame.Surface((text_width + 20, text_height + 20))
+        self.image.fill((0, 0, 0, 0))  # Transparent background
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
         self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 

@@ -180,7 +180,7 @@ def board():
                         GAMESCREEN, font
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
-                        main()
+                        return
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
