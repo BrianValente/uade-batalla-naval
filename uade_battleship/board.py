@@ -208,5 +208,6 @@ def board():
 
     pygame.quit()
 
+
 if __name__ == "__main__":
     board()
