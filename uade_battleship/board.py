@@ -92,7 +92,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
     for row_idx, row in enumerate(player_grid):
         for col_idx, col in enumerate(row):
             if p_game_logic[row_idx][col_idx] == "B":  # Parte del barco
-                color = (0, 0, 255)  # Azul para partes del barco
+                color = (0, 0, 250)  # Azul para partes del barco
             elif p_game_logic[row_idx][col_idx] == "X":  # Celda seleccionada
                 color = (255, 0, 0)  # Rojo para celdas seleccionadas
             elif p_game_logic[row_idx][col_idx] == "M":  # Marcada como fallo
@@ -205,8 +205,6 @@ def board():
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
 
         pygame.display.update()
-
-    pygame.quit()
 
 
 if __name__ == "__main__":
