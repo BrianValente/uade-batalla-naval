@@ -13,6 +13,9 @@ class Scoreboard:
 
     @staticmethod
     def get_scoreboard():
+        """
+        Get the scoreboard from the scoreboard file.
+        """
         data = FileStorage.read_file(Scoreboard.SCOREBOARD_FILE)
         if data is None:
             return []
@@ -25,6 +28,9 @@ class Scoreboard:
 
     @staticmethod
     def save_score(score: Score):
+        """
+        Save a score in the scoreboard file.
+        """
         scores = Scoreboard.get_scoreboard()
 
         # If the score exists (same name and score), don't save it
