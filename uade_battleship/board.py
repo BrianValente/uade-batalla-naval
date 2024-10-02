@@ -92,7 +92,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
     for row_idx, row in enumerate(player_grid):
         for col_idx, col in enumerate(row):
             if p_game_logic[row_idx][col_idx] == "B":  # Parte del barco
-                color = (0, 0, 255)  # Azul para partes del barco
+                color = (0, 0, 250)  # Azul para partes del barco
             elif p_game_logic[row_idx][col_idx] == "X":  # Celda seleccionada
                 color = (255, 0, 0)  # Rojo para celdas seleccionadas
             elif p_game_logic[row_idx][col_idx] == "M":  # Marcada como fallo
@@ -163,6 +163,11 @@ def board():
     font = pygame.font.SysFont(None, 36)
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
 
+    # Crear una superficie semi-transparente para opacar la grilla
+    overlay_surface = pygame.Surface(GAMESCREEN.get_size())
+    overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
+    overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
+
     RUNGAME = True
 
     while RUNGAME:
@@ -191,16 +196,15 @@ def board():
         # Mostrar siempre el botón del menú
         draw_menu_button(GAMESCREEN, (100, 100, 100), font)
 
+        update_game_screen(
+            GAMESCREEN, p_game_grid, p_game_logic
+        )  # Mostrar la grilla del juego
+
         if ask_return_menu:
+            GAMESCREEN.blit(overlay_surface, (0, 0))  # Añadir la capa opaca
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
-        else:
-            update_game_screen(
-                GAMESCREEN, p_game_grid, p_game_logic
-            )  # Mostrar la grilla del juego
 
         pygame.display.update()
-
-    pygame.quit()
 
 
 if __name__ == "__main__":
