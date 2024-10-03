@@ -187,6 +187,8 @@ class Button:
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
+
+
 import os
 import pygame, sys
 import math  # Para la animación
@@ -218,7 +220,9 @@ def options():
         screen = pygame.display.get_surface()
         screen.fill(WHITE)  # Fondo blanco para la pantalla de opciones
 
-        OPTIONS_TEXT = get_font(30).render("This is the OPTIONS screen.", True, DARK_BLUE)
+        OPTIONS_TEXT = get_font(30).render(
+            "This is the OPTIONS screen.", True, DARK_BLUE
+        )
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
@@ -256,8 +260,12 @@ def main_menu():
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
         # Control de la animación: usamos math.sin() para oscilar el tamaño
-        animation_time += clock.get_time() / 500  # Dividimos para controlar la velocidad
-        scale_factor = 1 + 0.1 * math.sin(animation_time)  # El factor de escala oscila entre 1 y 1.1
+        animation_time += (
+            clock.get_time() / 500
+        )  # Dividimos para controlar la velocidad
+        scale_factor = 1 + 0.1 * math.sin(
+            animation_time
+        )  # El factor de escala oscila entre 1 y 1.1
 
         # Cambiamos el tamaño del texto "MENU" según el factor de escala
         animated_font_size = int(60 * scale_factor)  # Ajustamos el tamaño de la fuente
@@ -357,12 +365,16 @@ class Button:
         screen.blit(self.text, self.text_rect)
 
     def checkForInput(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+        if position[0] in range(self.rect.left, self.rect.right) and position[
+            1
+        ] in range(self.rect.top, self.rect.bottom):
             return True
         return False
 
     def changeColor(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+        if position[0] in range(self.rect.left, self.rect.right) and position[
+            1
+        ] in range(self.rect.top, self.rect.bottom):
             self.text = self.font.render(self.text_input, True, self.hovering_color)
         else:
             self.text = self.font.render(self.text_input, True, self.base_color)
