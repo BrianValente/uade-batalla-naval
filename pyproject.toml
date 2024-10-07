@@ -12,6 +12,7 @@ pygame = "^2.6.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
 black = "^24.0.0"
+pyright = "^1.1.382.post1"
 
 [build-system]
 requires = ["poetry-core"]
