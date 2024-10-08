@@ -89,6 +89,7 @@ def colocar_barcos(logica_juego):
 
 # Función para mostrar la grilla en pantalla
 def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
+    # Dibujar las celdas de la grilla
     for row_idx, row in enumerate(player_grid):
         for col_idx, col in enumerate(row):
             if p_game_logic[row_idx][col_idx] == "B":  # Parte del barco
@@ -103,6 +104,45 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             pygame.draw.rect(
                 window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
             )  # Borde de la celda
+
+    # Añadir el primer borde alrededor de toda la grilla
+    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
+    # Dibujar el primer borde de la grilla (el más interno)
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+    )  # 3 es el grosor del borde
+
+    # Añadir el segundo borde, más grande
+    second_border_padding = 10  # Distancia entre el primer borde y el segundo
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
+
+    # Dibujar el segundo borde (más externo)
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
 
 
 # Función para imprimir la lógica del juego en la consola
