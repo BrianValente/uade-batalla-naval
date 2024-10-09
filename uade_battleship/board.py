@@ -1,6 +1,9 @@
 import pygame
 import subprocess  # Para ejecutar main.py
 from random import choice, randint
+from moviepy.editor import VideoFileClip
+import numpy as np
+import time
 
 
 def draw_menu_button(window, color, font):
@@ -132,7 +135,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
 
     # Dibujar el primer borde de la grilla (el más interno)
     pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 3
     )  # 3 es el grosor del borde
 
     # Añadir el segundo borde, más grande
@@ -246,6 +249,9 @@ CELLSIZE = 40
 
 
 def board():
+    
+    RUNGAME = True
+
     pygame.init()
     GAMESCREEN = pygame.display.get_surface()
     pygame.display.set_caption("Battleship Game")
@@ -256,6 +262,17 @@ def board():
 
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
+    
+    # Cargar el video de fondo
+    video = VideoFileClip("assets/background.mp4")
+     # Rotar el video de fondo
+    video_clip = video.rotate(90) 
+    start_time = time.time()  # Tiempo de inicio de la reproducción
+
+    overlay_surface = pygame.Surface(GAMESCREEN.get_size())
+    overlay_surface.set_alpha(140)
+    overlay_surface.fill((0, 0, 0))
+   
 
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
@@ -266,12 +283,11 @@ def board():
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
-    RUNGAME = True
-
     while RUNGAME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 RUNGAME = False
+                return
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
@@ -289,8 +305,18 @@ def board():
                 else:
                     handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
 
-        GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
+        
+        # Reproducir el video de fondo  
+        current_time = time.time() - start_time
+        if current_time >= video_clip.duration:
+            start_time = time.time()
 
+        frame = video_clip.get_frame(current_time % video_clip.duration)
+        frame_surface = pygame.surfarray.make_surface(np.array(frame))
+        frame_surface = pygame.transform.scale(frame_surface, (GAMESCREEN.get_width(), GAMESCREEN.get_height()))
+        
+        GAMESCREEN.blit(frame_surface, (0, 0))
+        
         # Mostrar siempre el botón del menú
         draw_menu_button(GAMESCREEN, (100, 100, 100), font)
 
