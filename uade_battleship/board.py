@@ -9,6 +9,7 @@ def draw_menu_button(window, gear_img):
     menu_button_rect = gear_img.get_rect(topleft=(20, 20))
     window.blit(gear_img, menu_button_rect.topleft)
 
+
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
 def show_menu_options(window, font):
     question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
@@ -236,8 +237,10 @@ def board():
 
     # Cargar imagen del menú
     gear_img = pygame.image.load("assets/gear.png")
-    gear_img = pygame.transform.scale(gear_img, (50, 50))  # Ajustar tamaño si es necesario
-    
+    gear_img = pygame.transform.scale(
+        gear_img, (50, 50)
+    )  # Ajustar tamaño si es necesario
+
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
@@ -272,7 +275,6 @@ def board():
 
         GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
 
-    
         # Mostrar el engranaje de configuración
         draw_menu_button(GAMESCREEN, gear_img)
 
