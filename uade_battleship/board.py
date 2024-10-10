@@ -3,15 +3,11 @@ import subprocess  # Para ejecutar main.py
 from random import choice, randint
 
 
-def draw_menu_button(window, color, font):
+def draw_menu_button(window, gear_img):
     global menu_button_rect
-    texto = font.render("Menu", True, (255, 0, 255))
-    menu_button_rect = pygame.Rect(
-        20, 20, texto.get_width() + 20, texto.get_height() + 10
-    )
-    pygame.draw.rect(window, color, menu_button_rect)
-    window.blit(texto, (menu_button_rect.x + 10, menu_button_rect.y + 5))
-
+    # Definir el área en la que estará el engranaje
+    menu_button_rect = gear_img.get_rect(topleft=(20, 20))
+    window.blit(gear_img, menu_button_rect.topleft)
 
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
 def show_menu_options(window, font):
@@ -104,25 +100,45 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             pygame.draw.rect(
                 window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
             )  # Borde de la celda
-    
+
     # Añadir el primer borde alrededor de toda la grilla
     grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize    # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]            # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]            # Y de la esquina superior izquierda
-    
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
     # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1)  # 3 es el grosor del borde
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+    )  # 3 es el grosor del borde
 
     # Añadir el segundo borde, más grande
     second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = grid_width + 2 * second_border_padding  # Ancho del segundo borde
-    second_border_height = grid_height + 2 * second_border_padding  # Altura del segundo borde
-    second_top_left_x = top_left_x - second_border_padding  # Ajustar la posición X del segundo borde
-    second_top_left_y = top_left_y - second_border_padding  # Ajustar la posición Y del segundo borde
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
 
     # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(window, (150, 0, 150), (second_top_left_x, second_top_left_y, second_border_width, second_border_height), 6)  # 3 es el grosor del segundo borde
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
 
     # Añadir el primer borde alrededor de toda la grilla
     grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
@@ -218,6 +234,10 @@ def board():
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
 
+    # Cargar imagen del menú
+    gear_img = pygame.image.load("assets/gear.png")
+    gear_img = pygame.transform.scale(gear_img, (50, 50))  # Ajustar tamaño si es necesario
+    
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
@@ -252,8 +272,9 @@ def board():
 
         GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
 
-        # Mostrar siempre el botón del menú
-        draw_menu_button(GAMESCREEN, (100, 100, 100), font)
+    
+        # Mostrar el engranaje de configuración
+        draw_menu_button(GAMESCREEN, gear_img)
 
         update_game_screen(
             GAMESCREEN, p_game_grid, p_game_logic
