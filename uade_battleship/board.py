@@ -3,14 +3,11 @@ import subprocess  # Para ejecutar main.py
 from random import choice, randint
 
 
-def draw_menu_button(window, color, font):
+def draw_menu_button(window, gear_img):
     global menu_button_rect
-    texto = font.render("Menu", True, (255, 0, 255))
-    menu_button_rect = pygame.Rect(
-        20, 20, texto.get_width() + 20, texto.get_height() + 10
-    )
-    pygame.draw.rect(window, color, menu_button_rect)
-    window.blit(texto, (menu_button_rect.x + 10, menu_button_rect.y + 5))
+    # Definir el área en la que estará el engranaje
+    menu_button_rect = gear_img.get_rect(topleft=(20, 20))
+    window.blit(gear_img, menu_button_rect.topleft)
 
 
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
@@ -238,6 +235,12 @@ def board():
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
 
+    # Cargar imagen del menú
+    gear_img = pygame.image.load("assets/gear.png")
+    gear_img = pygame.transform.scale(
+        gear_img, (50, 50)
+    )  # Ajustar tamaño si es necesario
+
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
@@ -272,8 +275,8 @@ def board():
 
         GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
 
-        # Mostrar siempre el botón del menú
-        draw_menu_button(GAMESCREEN, (100, 100, 100), font)
+        # Mostrar el engranaje de configuración
+        draw_menu_button(GAMESCREEN, gear_img)
 
         update_game_screen(
             GAMESCREEN, p_game_grid, p_game_logic
