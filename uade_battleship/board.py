@@ -1,4 +1,5 @@
 import pygame
+import sys
 import subprocess  # Para ejecutar main.py
 from random import choice, randint
 from moviepy.editor import VideoFileClip
@@ -284,12 +285,13 @@ COLS = 10
 CELLSIZE = 40
 
 
-def board():
 
+def board():
+        
     RUNGAME = True
 
     pygame.init()
-    GAMESCREEN = pygame.display.get_surface()
+    GAMESCREEN = pygame.display.get_surface()  # No cambiamos las dimensiones
     pygame.display.set_caption("Battleship Game")
 
     p_game_grid_start_pos = grid_size(GAMESCREEN, ROWS, COLS, CELLSIZE)
@@ -298,7 +300,19 @@ def board():
 
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
-
+    
+    # Cargar música de fondo
+    pygame.mixer.init()
+    pygame.mixer.music.load("assets/background_music_game.mp3")
+    
+    # Reproducir música de fondo
+    pygame.mixer.music.play(-1)  # Reproducir en bucle
+    pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+    
+    if not pygame.mixer.get_init():
+        print("Error al cargar la música de fondo")
+    
+    
     # Cargar el video de fondo
     video = VideoFileClip("assets/background.mp4")
     # Rotar el video de fondo
@@ -324,11 +338,13 @@ def board():
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
+
     while RUNGAME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 RUNGAME = False
-                return
+                pygame.quit()  # Cerramos Pygame al cerrar la ventana
+                sys.exit()  # Cerramos el programa
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
@@ -340,7 +356,8 @@ def board():
                         GAMESCREEN, font
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
-                        return
+                        pygame.mixer.music.stop()
+                        return  #se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
@@ -371,6 +388,10 @@ def board():
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
 
         pygame.display.update()
+        
+    # Cerrar Pygame solo cuando se desee salir del juego
+    pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
