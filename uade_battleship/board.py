@@ -1,4 +1,5 @@
 import pygame
+import sys
 import subprocess  # Para ejecutar main.py
 from random import choice, randint
 from moviepy.editor import VideoFileClip
@@ -104,6 +105,45 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             pygame.draw.rect(
                 window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
             )  # Borde de la celda
+
+    # Añadir el primer borde alrededor de toda la grilla
+    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
+    # Dibujar el primer borde de la grilla (el más interno)
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+    )  # 3 es el grosor del borde
+
+    # Añadir el segundo borde, más grande
+    second_border_padding = 10  # Distancia entre el primer borde y el segundo
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
+
+    # Dibujar el segundo borde (más externo)
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
 
     # Añadir el primer borde alrededor de toda la grilla
     grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
@@ -270,7 +310,7 @@ def board():
     RUNGAME = True
 
     pygame.init()
-    GAMESCREEN = pygame.display.get_surface()
+    GAMESCREEN = pygame.display.get_surface()  # No cambiamos las dimensiones
     pygame.display.set_caption("Battleship Game")
 
     p_game_grid_start_pos = grid_size(GAMESCREEN, ROWS, COLS, CELLSIZE)
@@ -279,6 +319,17 @@ def board():
 
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
+
+    # Cargar música de fondo
+    pygame.mixer.init()
+    pygame.mixer.music.load("assets/background_music_game.mp3")
+
+    # Reproducir música de fondo
+    pygame.mixer.music.play(-1)  # Reproducir en bucle
+    pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+
+    if not pygame.mixer.get_init():
+        print("Error al cargar la música de fondo")
 
     # Cargar el video de fondo
     video = VideoFileClip("assets/background.mp4")
@@ -309,7 +360,8 @@ def board():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 RUNGAME = False
-                return
+                pygame.quit()  # Cerramos Pygame al cerrar la ventana
+                sys.exit()  # Cerramos el programa
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
@@ -321,7 +373,8 @@ def board():
                         GAMESCREEN, font
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
-                        return
+                        pygame.mixer.music.stop()
+                        return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
@@ -352,6 +405,10 @@ def board():
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
 
         pygame.display.update()
+
+    # Cerrar Pygame solo cuando se desee salir del juego
+    pygame.quit()
+    sys.exit()
 
 
 if __name__ == "__main__":
