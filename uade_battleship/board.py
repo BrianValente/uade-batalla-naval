@@ -105,25 +105,45 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             pygame.draw.rect(
                 window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
             )  # Borde de la celda
-    
+
     # Añadir el primer borde alrededor de toda la grilla
     grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize    # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]            # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]            # Y de la esquina superior izquierda
-    
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
     # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1)  # 3 es el grosor del borde
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+    )  # 3 es el grosor del borde
 
     # Añadir el segundo borde, más grande
     second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = grid_width + 2 * second_border_padding  # Ancho del segundo borde
-    second_border_height = grid_height + 2 * second_border_padding  # Altura del segundo borde
-    second_top_left_x = top_left_x - second_border_padding  # Ajustar la posición X del segundo borde
-    second_top_left_y = top_left_y - second_border_padding  # Ajustar la posición Y del segundo borde
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
 
     # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(window, (150, 0, 150), (second_top_left_x, second_top_left_y, second_border_width, second_border_height), 6)  # 3 es el grosor del segundo borde
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
 
     # Añadir el primer borde alrededor de toda la grilla
     grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
@@ -285,9 +305,8 @@ COLS = 10
 CELLSIZE = 40
 
 
-
 def board():
-        
+
     RUNGAME = True
 
     pygame.init()
@@ -300,19 +319,18 @@ def board():
 
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
-    
+
     # Cargar música de fondo
     pygame.mixer.init()
     pygame.mixer.music.load("assets/background_music_game.mp3")
-    
+
     # Reproducir música de fondo
     pygame.mixer.music.play(-1)  # Reproducir en bucle
     pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
-    
+
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
-    
-    
+
     # Cargar el video de fondo
     video = VideoFileClip("assets/background.mp4")
     # Rotar el video de fondo
@@ -338,7 +356,6 @@ def board():
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
-
     while RUNGAME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -357,7 +374,7 @@ def board():
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
-                        return  #se vuelve al menu
+                        return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
@@ -388,7 +405,7 @@ def board():
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
 
         pygame.display.update()
-        
+
     # Cerrar Pygame solo cuando se desee salir del juego
     pygame.quit()
     sys.exit()
