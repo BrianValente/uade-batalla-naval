@@ -260,7 +260,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
             second_border_height,
         ),
         6,
-    )  # 3 es el grosor del segundo borde
+    )  # 6 es el grosor del segundo borde
 
 
 # Función para imprimir la lógica del juego en la consola
@@ -374,6 +374,13 @@ def board():
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
+                        # Cargar música de fondo
+                        pygame.mixer.init()
+                        pygame.mixer.music.load("assets/background_music_menu.mp3")
+
+                        # Reproducir música de fondo
+                        pygame.mixer.music.play(-1)  # Reproducir en bucle
+                        pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
