@@ -1,16 +1,16 @@
 import pygame
 import subprocess  # Para ejecutar main.py
 from random import choice, randint
+from moviepy.editor import VideoFileClip
+import numpy as np
+import time
 
 
-def draw_menu_button(window, color, font):
+def draw_menu_button(window, gear_img):
     global menu_button_rect
-    texto = font.render("Menu", True, (255, 0, 255))
-    menu_button_rect = pygame.Rect(
-        20, 20, texto.get_width() + 20, texto.get_height() + 10
-    )
-    pygame.draw.rect(window, color, menu_button_rect)
-    window.blit(texto, (menu_button_rect.x + 10, menu_button_rect.y + 5))
+    # Definir el área en la que estará el engranaje
+    menu_button_rect = gear_img.get_rect(topleft=(20, 20))
+    window.blit(gear_img, menu_button_rect.topleft)
 
 
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
@@ -163,6 +163,84 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
         6,
     )  # 3 es el grosor del segundo borde
 
+    # Añadir el primer borde alrededor de toda la grilla
+    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
+    # Dibujar el primer borde de la grilla (el más interno)
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 3
+    )  # 3 es el grosor del borde
+
+    # Añadir el segundo borde, más grande
+    second_border_padding = 10  # Distancia entre el primer borde y el segundo
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
+
+    # Dibujar el segundo borde (más externo)
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
+
+    # Añadir el primer borde alrededor de toda la grilla
+    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
+    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
+    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
+    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
+
+    # Dibujar el primer borde de la grilla (el más interno)
+    pygame.draw.rect(
+        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
+    )  # 3 es el grosor del borde
+
+    # Añadir el segundo borde, más grande
+    second_border_padding = 10  # Distancia entre el primer borde y el segundo
+    second_border_width = (
+        grid_width + 2 * second_border_padding
+    )  # Ancho del segundo borde
+    second_border_height = (
+        grid_height + 2 * second_border_padding
+    )  # Altura del segundo borde
+    second_top_left_x = (
+        top_left_x - second_border_padding
+    )  # Ajustar la posición X del segundo borde
+    second_top_left_y = (
+        top_left_y - second_border_padding
+    )  # Ajustar la posición Y del segundo borde
+
+    # Dibujar el segundo borde (más externo)
+    pygame.draw.rect(
+        window,
+        (150, 0, 150),
+        (
+            second_top_left_x,
+            second_top_left_y,
+            second_border_width,
+            second_border_height,
+        ),
+        6,
+    )  # 3 es el grosor del segundo borde
+
 
 # Función para imprimir la lógica del juego en la consola
 def print_game_logic(p_game_logic):
@@ -207,6 +285,9 @@ CELLSIZE = 40
 
 
 def board():
+
+    RUNGAME = True
+
     pygame.init()
     GAMESCREEN = pygame.display.get_surface()
     pygame.display.set_caption("Battleship Game")
@@ -218,6 +299,22 @@ def board():
     colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
     print_game_logic(p_game_logic)
 
+    # Cargar el video de fondo
+    video = VideoFileClip("assets/background.mp4")
+    # Rotar el video de fondo
+    video_clip = video.rotate(90)
+    start_time = time.time()  # Tiempo de inicio de la reproducción
+
+    overlay_surface = pygame.Surface(GAMESCREEN.get_size())
+    overlay_surface.set_alpha(140)
+    overlay_surface.fill((0, 0, 0))
+
+    # Cargar imagen del menú
+    gear_img = pygame.image.load("assets/gear.png")
+    gear_img = pygame.transform.scale(
+        gear_img, (50, 50)
+    )  # Ajustar tamaño si es necesario
+
     # Inicializar la fuente y el estado del menú
     font = pygame.font.SysFont(None, 36)
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
@@ -227,12 +324,11 @@ def board():
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
-    RUNGAME = True
-
     while RUNGAME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 RUNGAME = False
+                return
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if menu_button_rect.collidepoint(mouse_pos):
@@ -250,10 +346,21 @@ def board():
                 else:
                     handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
 
-        GAMESCREEN.fill((0, 51, 102))  # Fondo del juego
+        # Reproducir el video de fondo
+        current_time = time.time() - start_time
+        if current_time >= video_clip.duration:
+            start_time = time.time()
 
-        # Mostrar siempre el botón del menú
-        draw_menu_button(GAMESCREEN, (100, 100, 100), font)
+        frame = video_clip.get_frame(current_time % video_clip.duration)
+        frame_surface = pygame.surfarray.make_surface(np.array(frame))
+        frame_surface = pygame.transform.scale(
+            frame_surface, (GAMESCREEN.get_width(), GAMESCREEN.get_height())
+        )
+
+        GAMESCREEN.blit(frame_surface, (0, 0))
+
+        # Mostrar el engranaje de configuración
+        draw_menu_button(GAMESCREEN, gear_img)
 
         update_game_screen(
             GAMESCREEN, p_game_grid, p_game_logic
