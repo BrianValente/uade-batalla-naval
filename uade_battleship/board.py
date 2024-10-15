@@ -304,13 +304,19 @@ ROWS = 10
 COLS = 10
 CELLSIZE = 40
 
+# Función para manejar los eventos del teclado
+def handle_keyboard_event(event, ask_return_menu):
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_ESCAPE:
+            ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
+    return ask_return_menu
 
 def board():
 
     RUNGAME = True
 
     pygame.init()
-    GAMESCREEN = pygame.display.get_surface()  # No cambiamos las dimensiones
+    GAMESCREEN = pygame.display.get_surface()  
     pygame.display.set_caption("Battleship Game")
 
     p_game_grid_start_pos = grid_size(GAMESCREEN, ROWS, COLS, CELLSIZE)
@@ -362,22 +368,23 @@ def board():
                 RUNGAME = False
                 pygame.quit()  # Cerramos Pygame al cerrar la ventana
                 sys.exit()  # Cerramos el programa
+                
+            ask_return_menu = handle_keyboard_event(event, ask_return_menu)
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
+                
                 if menu_button_rect.collidepoint(mouse_pos):
-                    ask_return_menu = (
-                        not ask_return_menu
-                    )  # Alternar la visibilidad del menú
+                    ask_return_menu = (not ask_return_menu)  # Alternar la visibilidad del menú
+                    
                 if ask_return_menu:
-                    yes_button_rect, no_button_rect = show_menu_options(
-                        GAMESCREEN, font
-                    )
+                    yes_button_rect, no_button_rect = show_menu_options(GAMESCREEN, font)
+                    
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
                         # Cargar música de fondo
                         pygame.mixer.init()
                         pygame.mixer.music.load("assets/background_music_menu.mp3")
-
                         # Reproducir música de fondo
                         pygame.mixer.music.play(-1)  # Reproducir en bucle
                         pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
@@ -386,7 +393,9 @@ def board():
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
                     handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
-
+            
+                
+                
         # Reproducir el video de fondo
         current_time = time.time() - start_time
         if current_time >= video_clip.duration:
