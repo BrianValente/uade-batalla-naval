@@ -150,6 +150,7 @@ def main_menu():
         pygame.display.update()
         clock.tick(60)  # Mantenemos una velocidad de 60 FPS
 
+
 # Cargar música de fondo
 pygame.mixer.init()
 pygame.mixer.music.load("assets/background_music_menu.mp3")
@@ -157,6 +158,7 @@ pygame.mixer.music.load("assets/background_music_menu.mp3")
 # Reproducir música de fondo
 pygame.mixer.music.play(-1)  # Reproducir en bucle
 pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+
 
 # button
 class Button:
