@@ -70,12 +70,24 @@ def draw_volume_bar(GAMESCREEN, volume):
     filled_rect = pygame.Rect(bar_x, bar_y, int(volume * bar_width), bar_height)
     pygame.draw.rect(GAMESCREEN, BLUE, filled_rect)
 
-# Función para ajustar el volumen al mover el mouse
-def adjust_volume(mouse_x):
-    global volume
-    if volume_rect.collidepoint(mouse_x, bar_y):
-        volume = (mouse_x - bar_x) / bar_width
-        volume = max(0, min(volume, 1))  # Limitar entre 0 y 1
+# Variable para saber si el mouse está presionando la barra
+adjusting_volume = False
+
+# Función para ajustar el volumen al hacer clic y arrastrar
+def adjust_volume(mouse_x, mouse_y):
+    global volume, adjusting_volume
+    mouse_buttons = pygame.mouse.get_pressed()
+
+    # Verificar si el mouse está dentro de los límites de la barra de volumen
+    if mouse_buttons[0]:  # Si el botón izquierdo del mouse está presionado
+        if volume_rect.collidepoint(mouse_x, mouse_y) or adjusting_volume:
+            adjusting_volume = True
+            volume = (mouse_x - bar_x) / bar_width
+            volume = max(0, min(volume, 1))  # Limitar entre 0 y 1
+            pygame.mixer.music.set_volume(volume)  # Ajustar el volumen de la música
+    else:
+        adjusting_volume = False  # El usuario soltó el mouse
+
         
 
 
@@ -440,6 +452,8 @@ def board():
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
                     handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
+        
+        
 
         # Reproducir el video de fondo
         current_time = time.time() - start_time
@@ -467,6 +481,7 @@ def board():
             show_menu_options(GAMESCREEN, font)  # Mostrar opciones de menú
             show_volume_text(GAMESCREEN, font) #Mostrar texto de volumen
             draw_volume_bar(GAMESCREEN, volume) #Función para dibujar la barra de volumen
+            adjust_volume(*pygame.mouse.get_pos())  # Ajustar el volumen con el mouse
 
         pygame.display.update()
 
