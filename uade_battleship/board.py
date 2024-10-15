@@ -6,9 +6,25 @@ from moviepy.editor import VideoFileClip
 import numpy as np
 import time
 
+# Configuración inicial
+ROWS = 10
+COLS = 10
+CELLSIZE = 40
+# Colores
+WHITE = (255, 255, 255)
+GRAY = (100, 100, 100)
+BLUE = (0, 0, 255)
+
+# Variables del volumen
+volume = 0.5  # Volumen inicial (50%)
+bar_width = 200
+bar_height = 20
+bar_x = 40  # Coordenada x de la barra
+bar_y = 300  # Coordenada y debajo de los botones
 
 def draw_menu_button(window, gear_img):
     global menu_button_rect
+    
     # Definir el área en la que estará el engranaje
     menu_button_rect = gear_img.get_rect(topleft=(20, 20))
     window.blit(gear_img, menu_button_rect.topleft)
@@ -19,10 +35,13 @@ def show_menu_options(window, font):
     question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
     yes_text = font.render("Sí", True, (0, 150, 0))
     no_text = font.render("No", True, (150, 0, 0))
+    
 
     question_pos = (40, 100)
     yes_button_rect = pygame.Rect(40, 160, 50, 40)
     no_button_rect = pygame.Rect(120, 160, 50, 40)
+    
+    volume_pos = (40, 250)
 
     pygame.draw.rect(window, (0, 255, 0), yes_button_rect)
     pygame.draw.rect(window, (255, 0, 0), no_button_rect)
@@ -31,7 +50,33 @@ def show_menu_options(window, font):
     window.blit(yes_text, (yes_button_rect.x + 10, yes_button_rect.y + 5))
     window.blit(no_text, (no_button_rect.x + 10, no_button_rect.y + 5))
 
+
     return yes_button_rect, no_button_rect
+
+def show_volume_text(window, font):
+    volume_text = font.render("Volumen", True, (255, 255, 255))
+    window.blit(volume_text, (40, 250))
+    
+    return volume_text
+
+volume_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height) # Rectángulo que representa la barra de volumen
+
+# Función para dibujar la barra de volumen
+def draw_volume_bar(GAMESCREEN, volume):
+    # Fondo de la barra (gris)
+    pygame.draw.rect(GAMESCREEN, GRAY, volume_rect)
+    
+    # Parte de la barra que representa el volumen (azul)
+    filled_rect = pygame.Rect(bar_x, bar_y, int(volume * bar_width), bar_height)
+    pygame.draw.rect(GAMESCREEN, BLUE, filled_rect)
+
+# Función para ajustar el volumen al mover el mouse
+def adjust_volume(mouse_x):
+    global volume
+    if volume_rect.collidepoint(mouse_x, bar_y):
+        volume = (mouse_x - bar_x) / bar_width
+        volume = max(0, min(volume, 1))  # Limitar entre 0 y 1
+        
 
 
 # Función para crear la grilla
@@ -299,12 +344,8 @@ def handle_mouse_click(mouse_pos, grid, cellsize, p_game_logic):
                 return  # Salir después del primer clic
 
 
-# Configuración inicial
-ROWS = 10
-COLS = 10
-CELLSIZE = 40
 
-
+        
 # Función para manejar los eventos del teclado
 def handle_keyboard_event(event, ask_return_menu):
     if event.type == pygame.KEYDOWN:
@@ -334,7 +375,7 @@ def board():
 
     # Reproducir música de fondo
     pygame.mixer.music.play(-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+    pygame.mixer.music.set_volume(volume)  # Ajustar el volumen al 50%
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -364,6 +405,8 @@ def board():
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
+   
+
     while RUNGAME:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -377,15 +420,13 @@ def board():
                 mouse_pos = pygame.mouse.get_pos()
 
                 if menu_button_rect.collidepoint(mouse_pos):
-                    ask_return_menu = (
-                        not ask_return_menu
-                    )  # Alternar la visibilidad del menú
+                    ask_return_menu = (not ask_return_menu)  # Alternar la visibilidad del menú
 
                 if ask_return_menu:
-                    yes_button_rect, no_button_rect = show_menu_options(
-                        GAMESCREEN, font
-                    )
-
+                    yes_button_rect, no_button_rect = show_menu_options(GAMESCREEN, font)
+                    
+                    draw_volume_bar(GAMESCREEN, volume) #Función para dibujar la barra de volumen
+                        
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
                         # Cargar música de fondo
@@ -393,7 +434,7 @@ def board():
                         pygame.mixer.music.load("assets/background_music_menu.mp3")
                         # Reproducir música de fondo
                         pygame.mixer.music.play(-1)  # Reproducir en bucle
-                        pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+                        pygame.mixer.music.set_volume(volume)  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
@@ -415,14 +456,17 @@ def board():
 
         # Mostrar el engranaje de configuración
         draw_menu_button(GAMESCREEN, gear_img)
-
+        
+    
         update_game_screen(
             GAMESCREEN, p_game_grid, p_game_logic
         )  # Mostrar la grilla del juego
 
         if ask_return_menu:
             GAMESCREEN.blit(overlay_surface, (0, 0))  # Añadir la capa opaca
-            show_menu_options(GAMESCREEN, font)  # Mostrar opciones Sí/No
+            show_menu_options(GAMESCREEN, font)  # Mostrar opciones de menú
+            show_volume_text(GAMESCREEN, font) #Mostrar texto de volumen
+            draw_volume_bar(GAMESCREEN, volume) #Función para dibujar la barra de volumen
 
         pygame.display.update()
 
