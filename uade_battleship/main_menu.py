@@ -1,7 +1,13 @@
 import os
 import pygame, sys
+import math  # Para la animación
 
 from uade_battleship.board import board
+
+# Colores
+DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
+LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
+WHITE = (255, 255, 255)  # Blanco para el texto
 
 pygame.display.set_caption("Menu")
 
@@ -21,9 +27,11 @@ def options():
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
         screen = pygame.display.get_surface()
-        screen.fill("white")
+        screen.fill(WHITE)  # Fondo blanco para la pantalla de opciones
 
-        OPTIONS_TEXT = get_font(30).render("This is the OPTIONS screen.", True, "Black")
+        OPTIONS_TEXT = get_font(30).render(
+            "This is the OPTIONS screen.", True, DARK_BLUE
+        )
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
@@ -32,8 +40,8 @@ def options():
             pos=(640, 460),
             text_input="BACK",
             font=get_font(30),
-            base_color="Black",
-            hovering_color="Green",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
@@ -51,13 +59,26 @@ def options():
 
 
 def main_menu():
+    clock = pygame.time.Clock()
+    animation_time = 0  # Variable para controlar el tiempo de animación
+
     while True:
         screen = pygame.display.get_surface()
-        screen.blit(BG, (0, 0))
+        screen.fill(DARK_BLUE)  # Fondo azul oscuro
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        MENU_TEXT = get_font(60).render("MENU", True, "#b68f40")
+        # Control de la animación: usamos math.sin() para oscilar el tamaño
+        animation_time += (
+            clock.get_time() / 500
+        )  # Dividimos para controlar la velocidad
+        scale_factor = 1 + 0.1 * math.sin(
+            animation_time
+        )  # El factor de escala oscila entre 1 y 1.1
+
+        # Cambiamos el tamaño del texto "MENU" según el factor de escala
+        animated_font_size = int(60 * scale_factor)  # Ajustamos el tamaño de la fuente
+        MENU_TEXT = get_font(animated_font_size).render("MENU", True, WHITE)
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
         PLAY_BUTTON = Button(
@@ -65,40 +86,40 @@ def main_menu():
             pos=(640, 200),
             text_input="Comenzar partida",
             font=get_font(30),
-            base_color="#d7fcd4",
-            hovering_color="White",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
         OPTIONS_BUTTON = Button(
             image=None,
             pos=(640, 300),
             text_input="Instrucciones de juego",
             font=get_font(30),
-            base_color="#d7fcd4",
-            hovering_color="White",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
         CREDITS_BUTTON = Button(
             image=None,
             pos=(640, 400),
             text_input="Configuraciones",
             font=get_font(30),
-            base_color="#d7fcd4",
-            hovering_color="White",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
         HELP_BUTTON = Button(
             image=None,
             pos=(640, 500),
             text_input="Scores",
             font=get_font(30),
-            base_color="#d7fcd4",
-            hovering_color="White",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
         QUIT_BUTTON = Button(
             image=None,
             pos=(640, 600),
             text_input="Salir",
             font=get_font(30),
-            base_color="#d7fcd4",
-            hovering_color="White",
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
         )
 
         screen.blit(MENU_TEXT, MENU_RECT)
@@ -127,6 +148,16 @@ def main_menu():
                     sys.exit()
 
         pygame.display.update()
+        clock.tick(60)  # Mantenemos una velocidad de 60 FPS
+
+
+# Cargar música de fondo
+pygame.mixer.init()
+pygame.mixer.music.load("assets/background_music_menu.mp3")
+
+# Reproducir música de fondo
+pygame.mixer.music.play(-1)  # Reproducir en bucle
+pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
 
 
 # button
