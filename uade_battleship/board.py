@@ -206,7 +206,6 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
         6,
     )  # 6 es el grosor del segundo borde
 
-    
 
 # Función para imprimir la lógica del juego en la consola
 def print_game_logic(p_game_logic):
@@ -250,7 +249,6 @@ def handle_keyboard_event(event, ask_return_menu):
         if event.key == pygame.K_ESCAPE:
             ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
     return ask_return_menu
-
 
 
 def board():
@@ -312,20 +310,18 @@ def board():
                 sys.exit()  # Cerramos el programa
 
             ask_return_menu = handle_keyboard_event(event, ask_return_menu)
-            
-            draw_volume_bar(
-                        GAMESCREEN, volume)  # Función para dibujar la barra de volumen
 
+            draw_volume_bar(
+                GAMESCREEN, volume
+            )  # Función para dibujar la barra de volumen
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-
 
                 if menu_button_rect.collidepoint(mouse_pos):
                     ask_return_menu = (
                         not ask_return_menu
                     )  # Alternar la visibilidad del menú
-
 
                 if ask_return_menu:
                     yes_button_rect, no_button_rect = show_menu_options(
