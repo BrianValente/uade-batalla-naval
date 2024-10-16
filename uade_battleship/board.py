@@ -13,20 +13,22 @@ CELLSIZE = 40
 # Colores
 WHITE = (255, 255, 255)
 GRAY = (100, 100, 100)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # Variables del volumen
 volume = 0.5  # Volumen inicial (50%)
-bar_width = 200
+bar_width = 150
 bar_height = 20
-bar_x = 40  # Coordenada x de la barra
-bar_y = 300  # Coordenada y debajo de los botones
+bar_x = 80  # Coordenada x de la barra
+bar_y = 285  # Coordenada y debajo de los botones
 
 
 def draw_menu_button(window, gear_img):
     global menu_button_rect
 
-    # Definir el área en la que estará el engranaje
+    #area del icono de configuración
     menu_button_rect = gear_img.get_rect(topleft=(20, 20))
     window.blit(gear_img, menu_button_rect.topleft)
 
@@ -43,8 +45,8 @@ def show_menu_options(window, font):
 
     volume_pos = (40, 250)
 
-    pygame.draw.rect(window, (0, 255, 0), yes_button_rect)
-    pygame.draw.rect(window, (255, 0, 0), no_button_rect)
+    pygame.draw.rect(window, (GREEN), yes_button_rect)
+    pygame.draw.rect(window, (RED), no_button_rect)
 
     window.blit(question_text, question_pos)
     window.blit(yes_text, (yes_button_rect.x + 10, yes_button_rect.y + 5))
@@ -56,13 +58,18 @@ def show_menu_options(window, font):
 def show_volume_text(window, font):
     volume_text = font.render("Volumen", True, (255, 255, 255))
     window.blit(volume_text, (40, 250))
+    
+    volume_img = pygame.image.load("assets/volume.png")
+    volume_img = pygame.transform.scale(volume_img, (50, 30))
+    window.blit(volume_img, (35, 280))
+
 
     return volume_text
 
-
+# Rectángulo que representa la barra de volumen
 volume_rect = pygame.Rect(
     bar_x, bar_y, bar_width, bar_height
-)  # Rectángulo que representa la barra de volumen
+)  
 
 
 # Función para dibujar la barra de volumen
@@ -176,7 +183,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
     # Dibujar el primer borde de la grilla (el más interno)
     pygame.draw.rect(
         window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 6 es el grosor del borde
+    )  # 1 es el grosor del borde
 
     # Añadir el segundo borde, más grande
     second_border_padding = 10  # Distancia entre el primer borde y el segundo
@@ -272,7 +279,7 @@ def board():
 
     # Reproducir música de fondo
     pygame.mixer.music.play(-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(volume)  # Ajustar el volumen al 50%
+    pygame.mixer.music.set_volume(volume) #volumen
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -334,7 +341,7 @@ def board():
                         pygame.mixer.music.load("assets/background_music_menu.mp3")
                         # Reproducir música de fondo
                         pygame.mixer.music.play(-1)  # Reproducir en bucle
-                        pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+                        pygame.mixer.music.set_volume(volume)  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
