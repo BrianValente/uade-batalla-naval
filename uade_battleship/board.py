@@ -28,7 +28,7 @@ bar_y = 285  # Coordenada y debajo de los botones
 def draw_menu_button(window, gear_img):
     global menu_button_rect
 
-    #area del icono de configuración
+    # area del icono de configuración
     menu_button_rect = gear_img.get_rect(topleft=(20, 20))
     window.blit(gear_img, menu_button_rect.topleft)
 
@@ -58,18 +58,16 @@ def show_menu_options(window, font):
 def show_volume_text(window, font):
     volume_text = font.render("Volumen", True, (255, 255, 255))
     window.blit(volume_text, (40, 250))
-    
+
     volume_img = pygame.image.load("assets/volume.png")
     volume_img = pygame.transform.scale(volume_img, (50, 30))
     window.blit(volume_img, (35, 280))
 
-
     return volume_text
 
+
 # Rectángulo que representa la barra de volumen
-volume_rect = pygame.Rect(
-    bar_x, bar_y, bar_width, bar_height
-)  
+volume_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
 
 
 # Función para dibujar la barra de volumen
@@ -279,7 +277,7 @@ def board():
 
     # Reproducir música de fondo
     pygame.mixer.music.play(-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(volume) #volumen
+    pygame.mixer.music.set_volume(volume)  # volumen
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -341,7 +339,9 @@ def board():
                         pygame.mixer.music.load("assets/background_music_menu.mp3")
                         # Reproducir música de fondo
                         pygame.mixer.music.play(-1)  # Reproducir en bucle
-                        pygame.mixer.music.set_volume(volume)  # Ajustar el volumen al 50%
+                        pygame.mixer.music.set_volume(
+                            volume
+                        )  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
