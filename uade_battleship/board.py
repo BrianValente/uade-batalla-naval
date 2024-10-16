@@ -176,124 +176,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
     # Dibujar el primer borde de la grilla (el más interno)
     pygame.draw.rect(
         window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 3 es el grosor del borde
-
-    # Añadir el segundo borde, más grande
-    second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = (
-        grid_width + 2 * second_border_padding
-    )  # Ancho del segundo borde
-    second_border_height = (
-        grid_height + 2 * second_border_padding
-    )  # Altura del segundo borde
-    second_top_left_x = (
-        top_left_x - second_border_padding
-    )  # Ajustar la posición X del segundo borde
-    second_top_left_y = (
-        top_left_y - second_border_padding
-    )  # Ajustar la posición Y del segundo borde
-
-    # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(
-        window,
-        (150, 0, 150),
-        (
-            second_top_left_x,
-            second_top_left_y,
-            second_border_width,
-            second_border_height,
-        ),
-        6,
-    )  # 3 es el grosor del segundo borde
-
-    # Añadir el primer borde alrededor de toda la grilla
-    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
-
-    # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 3 es el grosor del borde
-
-    # Añadir el segundo borde, más grande
-    second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = (
-        grid_width + 2 * second_border_padding
-    )  # Ancho del segundo borde
-    second_border_height = (
-        grid_height + 2 * second_border_padding
-    )  # Altura del segundo borde
-    second_top_left_x = (
-        top_left_x - second_border_padding
-    )  # Ajustar la posición X del segundo borde
-    second_top_left_y = (
-        top_left_y - second_border_padding
-    )  # Ajustar la posición Y del segundo borde
-
-    # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(
-        window,
-        (150, 0, 150),
-        (
-            second_top_left_x,
-            second_top_left_y,
-            second_border_width,
-            second_border_height,
-        ),
-        6,
-    )  # 3 es el grosor del segundo borde
-
-    # Añadir el primer borde alrededor de toda la grilla
-    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
-
-    # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 3
-    )  # 3 es el grosor del borde
-
-    # Añadir el segundo borde, más grande
-    second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = (
-        grid_width + 2 * second_border_padding
-    )  # Ancho del segundo borde
-    second_border_height = (
-        grid_height + 2 * second_border_padding
-    )  # Altura del segundo borde
-    second_top_left_x = (
-        top_left_x - second_border_padding
-    )  # Ajustar la posición X del segundo borde
-    second_top_left_y = (
-        top_left_y - second_border_padding
-    )  # Ajustar la posición Y del segundo borde
-
-    # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(
-        window,
-        (150, 0, 150),
-        (
-            second_top_left_x,
-            second_top_left_y,
-            second_border_width,
-            second_border_height,
-        ),
-        6,
-    )  # 3 es el grosor del segundo borde
-
-    # Añadir el primer borde alrededor de toda la grilla
-    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
-
-    # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 3 es el grosor del borde
+    )  # 6 es el grosor del borde
 
     # Añadir el segundo borde, más grande
     second_border_padding = 10  # Distancia entre el primer borde y el segundo
@@ -323,6 +206,7 @@ def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
         6,
     )  # 6 es el grosor del segundo borde
 
+    
 
 # Función para imprimir la lógica del juego en la consola
 def print_game_logic(p_game_logic):
@@ -366,6 +250,7 @@ def handle_keyboard_event(event, ask_return_menu):
         if event.key == pygame.K_ESCAPE:
             ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
     return ask_return_menu
+
 
 
 def board():
@@ -427,34 +312,27 @@ def board():
                 sys.exit()  # Cerramos el programa
 
             ask_return_menu = handle_keyboard_event(event, ask_return_menu)
+            
+            draw_volume_bar(
+                        GAMESCREEN, volume)  # Función para dibujar la barra de volumen
+
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
+
 
                 if menu_button_rect.collidepoint(mouse_pos):
                     ask_return_menu = (
                         not ask_return_menu
                     )  # Alternar la visibilidad del menú
 
+
                 if ask_return_menu:
                     yes_button_rect, no_button_rect = show_menu_options(
                         GAMESCREEN, font
                     )
-
-                    draw_volume_bar(
-                        GAMESCREEN, volume
-                    )  # Función para dibujar la barra de volumen
-
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
-                        # Cargar música de fondo
-                        pygame.mixer.init()
-                        pygame.mixer.music.load("assets/background_music_menu.mp3")
-                        # Reproducir música de fondo
-                        pygame.mixer.music.play(-1)  # Reproducir en bucle
-                        pygame.mixer.music.set_volume(
-                            volume
-                        )  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
