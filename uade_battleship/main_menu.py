@@ -144,7 +144,7 @@ def main_menu():
                 if event.key in [pygame.K_UP, pygame.K_w]:
                     selected_option = (selected_option - 1) % len(buttons)
                     mouse_used = False  # Reseteamos el uso del mouse
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     if selected_option == 0:
                         play()
                     elif selected_option == 1:
