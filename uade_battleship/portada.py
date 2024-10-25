@@ -87,6 +87,8 @@ def portada():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     play()
+            if event.type == pygame.KEYDOWN:
+                play()
 
         pygame.display.update()
 
