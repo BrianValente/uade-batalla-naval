@@ -15,11 +15,14 @@ pygame.display.set_caption("Menu")
 # Carga la imagen de fondo desde la carpeta de descargas
 BG = pygame.image.load("C:/Users/maria/Downloads/background battleship game menu.jpg")
 
+
 def get_font(size):
     return pygame.font.Font("assets/font.ttf", size)
 
+
 def play():
     board()
+
 
 def options():
     while True:
@@ -60,6 +63,7 @@ def options():
                     main_menu()
 
         pygame.display.update()
+
 
 def main_menu():
     clock = pygame.time.Clock()
@@ -129,7 +133,13 @@ def main_menu():
             hovering_color=WHITE,
         )
 
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, CREDITS_BUTTON, HELP_BUTTON, QUIT_BUTTON]:
+        for button in [
+            PLAY_BUTTON,
+            OPTIONS_BUTTON,
+            CREDITS_BUTTON,
+            HELP_BUTTON,
+            QUIT_BUTTON,
+        ]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(screen)
 
@@ -149,9 +159,20 @@ def main_menu():
         pygame.display.update()
         clock.tick(60)
 
+
 # Definición de la clase Button con borde blanco alrededor
 class Button:
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color, border_color=WHITE, border_thickness=3):
+    def __init__(
+        self,
+        image,
+        pos,
+        text_input,
+        font,
+        base_color,
+        hovering_color,
+        border_color=WHITE,
+        border_thickness=3,
+    ):
         self.image = image
         self.x_pos = pos[0]
         self.y_pos = pos[1]
@@ -180,13 +201,7 @@ class Button:
         return self.rect.collidepoint(position)
 
     def changeColor(self, position):
-        color = self.hovering_color if self.rect.collidepoint(position) else self.base_color
+        color = (
+            self.hovering_color if self.rect.collidepoint(position) else self.base_color
+        )
         self.text = self.font.render(self.text_input, True, color)
-
-
-
-
-
-
-
-
