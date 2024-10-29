@@ -2,6 +2,7 @@ import os
 import pygame, sys
 import math  # Para la animación
 from uade_battleship.board import board
+from uade_battleship.instructions import instructions
 
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo
@@ -100,7 +101,7 @@ def main_menu():
             base_color=BRIGHT_BLUE,
             hovering_color=WHITE,
         )
-        OPTIONS_BUTTON = Button(
+        INSTRUCTIONS_BUTTON = Button(
             image=None,
             pos=(640, 300),
             text_input="Instrucciones de juego",
@@ -135,7 +136,7 @@ def main_menu():
 
         for button in [
             PLAY_BUTTON,
-            OPTIONS_BUTTON,
+            INSTRUCTIONS_BUTTON,
             CREDITS_BUTTON,
             HELP_BUTTON,
             QUIT_BUTTON,
@@ -150,8 +151,8 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     play()
-                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    options()
+                if INSTRUCTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    instructions()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
@@ -191,7 +192,10 @@ class Button:
 
         # Crear el fondo del texto para que sea transparente y añadir contorno
         self.image = pygame.Surface(
-            (text_width + 2 * self.border_thickness, text_height + 2 * self.border_thickness),
+            (
+                text_width + 2 * self.border_thickness,
+                text_height + 2 * self.border_thickness,
+            ),
             pygame.SRCALPHA,
         )
 
@@ -199,8 +203,16 @@ class Button:
         for offset_x in range(-self.border_thickness, self.border_thickness + 1):
             for offset_y in range(-self.border_thickness, self.border_thickness + 1):
                 if offset_x != 0 or offset_y != 0:
-                    contoured_text = self.font.render(self.text_input, True, self.border_color)
-                    self.image.blit(contoured_text, (self.border_thickness + offset_x, self.border_thickness + offset_y))
+                    contoured_text = self.font.render(
+                        self.text_input, True, self.border_color
+                    )
+                    self.image.blit(
+                        contoured_text,
+                        (
+                            self.border_thickness + offset_x,
+                            self.border_thickness + offset_y,
+                        ),
+                    )
 
         # Dibujar el texto principal en el centro
         self.image.blit(self.text, (self.border_thickness, self.border_thickness))
@@ -218,4 +230,3 @@ class Button:
         )
         if color != self.text.get_at((0, 0)):
             self.update_text(color)
-
