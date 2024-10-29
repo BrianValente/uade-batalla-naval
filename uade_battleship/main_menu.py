@@ -1,20 +1,20 @@
 import os
 import pygame, sys
 import math  # Para la animación
+
 from uade_battleship.board import board
 from uade_battleship.instructions import instructions
+from uade_battleship.match import match
 
 # Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo
-BRIGHT_BLUE = (30, 144, 255)  # Azul más claro y vibrante para el texto
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón en estado normal
-WHITE = (255, 255, 255)  # Blanco para el texto y borde
+DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
+LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
+WHITE = (255, 255, 255)  # Blanco para el texto
 TRANSLUCENT_BLACK = (0, 0, 0, 128)  # Negro translúcido para superponer sobre el fondo
 
 pygame.display.set_caption("Menu")
 
-# Carga la imagen de fondo desde la carpeta de descargas
-BG = pygame.image.load("C:/Users/maria/Downloads/background battleship game menu.jpg")
+BG = pygame.image.load("assets/menu_background.jpg")
 
 
 def get_font(size):
@@ -25,55 +25,60 @@ def play():
     board()
 
 
-def options():
-    while True:
-        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
-        screen = pygame.display.get_surface()
-
-        # Dibuja la imagen de fondo y aplica la capa negra translúcida
-        background_scaled = pygame.transform.scale(BG, (1280, 720))
-        screen.blit(background_scaled, (0, 0))
-        overlay = pygame.Surface((1280, 720), pygame.SRCALPHA)
-        overlay.fill(TRANSLUCENT_BLACK)
-        screen.blit(overlay, (0, 0))
-
-        OPTIONS_TEXT = get_font(30).render(
-            "This is the OPTIONS screen.", True, BRIGHT_BLUE
-        )
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
-        screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
-
-        OPTIONS_BACK = Button(
-            image=None,
-            pos=(640, 460),
-            text_input="BACK",
-            font=get_font(30),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-
-        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
-        OPTIONS_BACK.update(screen)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-                    main_menu()
-
-        pygame.display.update()
-
-
 def main_menu():
     clock = pygame.time.Clock()
     animation_time = 0  # Variable para controlar el tiempo de animación
+    selected_option = 0  # Índice de la opción seleccionada
+    mouse_used = False  # Bandera para detectar si el mouse fue usado
+
+    # Definimos la lista de botones
+    buttons = [
+        Button(
+            image=None,
+            pos=(640, 200),
+            text_input="Comenzar partida",
+            font=get_font(30),
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
+        ),
+        Button(
+            image=None,
+            pos=(640, 300),
+            text_input="Instrucciones de juego",
+            font=get_font(30),
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
+        ),
+        Button(
+            image=None,
+            pos=(640, 400),
+            text_input="Configuraciones",
+            font=get_font(30),
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
+        ),
+        Button(
+            image=None,
+            pos=(640, 500),
+            text_input="Scores",
+            font=get_font(30),
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
+        ),
+        Button(
+            image=None,
+            pos=(640, 600),
+            text_input="Salir",
+            font=get_font(30),
+            base_color=LIGHT_BLUE,
+            hovering_color=WHITE,
+        ),
+    ]
 
     while True:
         screen = pygame.display.get_surface()
-
-        # Dibuja la imagen de fondo con capa translúcida
+        
+        # Dibuja la imagen de fondo y aplica la capa negra translúcida
         background_scaled = pygame.transform.scale(BG, (1280, 720))
         screen.blit(background_scaled, (0, 0))
         overlay = pygame.Surface((1280, 720), pygame.SRCALPHA)
@@ -82,86 +87,85 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        # Control de la animación del texto
-        animation_time += clock.get_time() / 500  # Velocidad de la animación
-        scale_factor = 1 + 0.1 * math.sin(animation_time)  # Factor de escala
-
-        # Texto "MENU" en BRIGHT_BLUE
-        animated_font_size = int(60 * scale_factor)
+        # Control de la animación: usamos math.sin() para oscilar el tamaño
+        animation_time += (
+            clock.get_time() / 500
+        )  # Dividimos para controlar la velocidad
+        scale_factor = 1 + 0.1 * math.sin(
+            animation_time
+        )  # El factor de escala oscila entre 1 y 1.1
+        animated_font_size = int(60 * scale_factor)  # Ajustamos el tamaño de la fuente
         MENU_TEXT = get_font(animated_font_size).render("MENU", True, WHITE)
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
         screen.blit(MENU_TEXT, MENU_RECT)
 
-        # Botones con BRIGHT_BLUE para el texto
-        PLAY_BUTTON = Button(
-            image=None,
-            pos=(640, 200),
-            text_input="Comenzar partida",
-            font=get_font(40),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-        INSTRUCTIONS_BUTTON = Button(
-            image=None,
-            pos=(640, 300),
-            text_input="Instrucciones de juego",
-            font=get_font(40),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-        CREDITS_BUTTON = Button(
-            image=None,
-            pos=(640, 400),
-            text_input="Configuraciones",
-            font=get_font(40),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-        HELP_BUTTON = Button(
-            image=None,
-            pos=(640, 500),
-            text_input="Scores",
-            font=get_font(40),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-        QUIT_BUTTON = Button(
-            image=None,
-            pos=(640, 600),
-            text_input="Salir",
-            font=get_font(40),
-            base_color=BRIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-
-        for button in [
-            PLAY_BUTTON,
-            INSTRUCTIONS_BUTTON,
-            CREDITS_BUTTON,
-            HELP_BUTTON,
-            QUIT_BUTTON,
-        ]:
+        # Actualizar colores y posición de botones
+        for i, button in enumerate(buttons):
             button.changeColor(MENU_MOUSE_POS)
             button.update(screen)
 
+        # Mover entre opciones con teclas y mouse
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key in [pygame.K_DOWN, pygame.K_s]:
+                    selected_option = (selected_option + 1) % len(buttons)
+                    mouse_used = False  # Reseteamos el uso del mouse
+                if event.key in [pygame.K_UP, pygame.K_w]:
+                    selected_option = (selected_option - 1) % len(buttons)
+                    mouse_used = False  # Reseteamos el uso del mouse
+                if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    if selected_option == 0:
+                        play()
+                    elif selected_option == 1:
+                        options()
+                    elif selected_option == 4:  # Salir
+                        pygame.quit()
+                        sys.exit()
+
+            if event.type == pygame.MOUSEMOTION:
+                mouse_used = True  # Si se mueve el mouse, lo usamos para resaltar
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    play()
-                if INSTRUCTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    instructions()
-                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    pygame.quit()
-                    sys.exit()
+                for i, button in enumerate(buttons):
+                    if button.checkForInput(MENU_MOUSE_POS):
+                        selected_option = i
+                        if i == 0:
+                            play()
+                        elif i == 1:
+                            instructions()
+                        elif i == 4:
+                            pygame.quit()
+                            sys.exit()
+
+        # Resaltar la opción seleccionada con el teclado
+        if not mouse_used:
+            for i, button in enumerate(buttons):
+                if i == selected_option:
+                    button.text = button.font.render(
+                        button.text_input, True, button.hovering_color
+                    )
+                else:
+                    button.text = button.font.render(
+                        button.text_input, True, button.base_color
+                    )
+                button.update(screen)
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(60)  # Mantenemos una velocidad de 60 FPS
 
 
-# Definición de la clase Button sin fondo, con contorno blanco en el texto
+# Cargar música de fondo
+pygame.mixer.init()
+pygame.mixer.music.load("assets/background_music_menu.mp3")
+
+# Reproducir música de fondo
+pygame.mixer.music.play(-1)  # Reproducir en bucle
+pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+
+
+# Definición de la clase Button
 class Button:
     def __init__(
         self,

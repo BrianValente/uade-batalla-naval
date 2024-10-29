@@ -8,10 +8,12 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 pygame = "^2.6.0"
+moviepy = "^1.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
 black = "^24.0.0"
+pyright = "^1.1.382.post1"
 
 [build-system]
 requires = ["poetry-core"]
