@@ -77,7 +77,7 @@ def main_menu():
 
     while True:
         screen = pygame.display.get_surface()
-        
+
         # Dibuja la imagen de fondo y aplica la capa negra translúcida
         background_scaled = pygame.transform.scale(BG, (1280, 720))
         screen.blit(background_scaled, (0, 0))
