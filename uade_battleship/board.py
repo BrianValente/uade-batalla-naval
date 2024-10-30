@@ -1,12 +1,22 @@
 import pygame
 import sys
-import subprocess  # Para ejecutar main.py
-from uade_battleship.match import match
-from random import choice, randint
 from moviepy.editor import VideoFileClip
+from moviepy.video.io.VideoFileClip import VideoFileClip
 import numpy as np
 import time
+from typing import Any, Callable, Protocol, cast
 
+from uade_battleship.game_board.game_board import GameBoard
+
+from .match import Match, ShotResult
+
+
+class VideoClipProtocol(Protocol):
+    duration: float
+    get_frame: Callable[[float], Any]
+
+
+player_name = ["Player 1", "CPU"]
 
 # Configuración inicial
 ROWS = 10
@@ -27,7 +37,7 @@ bar_x = 80  # Coordenada x de la barra
 bar_y = 285  # Coordenada y debajo de los botones
 
 
-def draw_menu_button(window, gear_img):
+def draw_menu_button(window: pygame.Surface, gear_img: pygame.Surface):
     global menu_button_rect
 
     # area del icono de configuración
@@ -36,7 +46,7 @@ def draw_menu_button(window, gear_img):
 
 
 # Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
-def show_menu_options(window, font):
+def show_menu_options(window: pygame.Surface, font: pygame.font.Font):
     question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
     yes_text = font.render("Sí", True, (0, 150, 0))
     no_text = font.render("No", True, (150, 0, 0))
@@ -44,8 +54,6 @@ def show_menu_options(window, font):
     question_pos = (40, 100)
     yes_button_rect = pygame.Rect(40, 160, 50, 40)
     no_button_rect = pygame.Rect(120, 160, 50, 40)
-
-    volume_pos = (40, 250)
 
     pygame.draw.rect(window, (GREEN), yes_button_rect)
     pygame.draw.rect(window, (RED), no_button_rect)
@@ -57,7 +65,7 @@ def show_menu_options(window, font):
     return yes_button_rect, no_button_rect
 
 
-def show_volume_text(window, font):
+def show_volume_text(window: pygame.Surface, font: pygame.font.Font):
     volume_text = font.render("Volumen", True, (255, 255, 255))
     window.blit(volume_text, (40, 250))
 
@@ -73,13 +81,13 @@ volume_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
 
 
 # Función para dibujar la barra de volumen
-def draw_volume_bar(GAMESCREEN, volume):
+def draw_volume_bar(window: pygame.Surface, volume: float):
     # Fondo de la barra (gris)
-    pygame.draw.rect(GAMESCREEN, GRAY, volume_rect)
+    pygame.draw.rect(window, GRAY, volume_rect)
 
     # Parte de la barra que representa el volumen (azul)
     filled_rect = pygame.Rect(bar_x, bar_y, int(volume * bar_width), bar_height)
-    pygame.draw.rect(GAMESCREEN, BLUE, filled_rect)
+    pygame.draw.rect(window, BLUE, filled_rect)
 
 
 # Variable para saber si el mouse está presionando la barra
@@ -87,7 +95,7 @@ adjusting_volume = False
 
 
 # Función para ajustar el volumen al hacer clic y arrastrar
-def adjust_volume(mouse_x, mouse_y):
+def adjust_volume(mouse_x: int, mouse_y: int):
     global volume, adjusting_volume
     mouse_buttons = pygame.mouse.get_pressed()
 
@@ -103,12 +111,12 @@ def adjust_volume(mouse_x, mouse_y):
 
 
 # Función para crear la grilla
-def create_game_grid(rows, cols, cellsize, pos):
+def create_game_grid(rows: int, cols: int, cellsize: int, pos: tuple[int, int]):
     start_x = pos[0]
     start_y = pos[1]
-    coor_grid = []
+    coor_grid: list[list[tuple[int, int]]] = []
     for _ in range(rows):
-        row_x = []
+        row_x: list[tuple[int, int]] = []
         for _ in range(cols):
             row_x.append((start_x, start_y))
             start_x += cellsize
@@ -119,154 +127,25 @@ def create_game_grid(rows, cols, cellsize, pos):
 
 
 # Función para inicializar la lógica del juego
-def update_game_logic(rows, cols):
-    gamelogic = []
+def update_game_logic(rows: int, cols: int):
+    gamelogic: list[list[str]] = []
     for _ in range(rows):
-        row_x = []
+        row_x: list[str] = []
         for _ in range(cols):
             row_x.append(" ")  # Espacio en blanco para celdas vacías
         gamelogic.append(row_x)
     return gamelogic
 
 
-# Función para colocar barcos en la lógica del juego
-def colocar_barcos(logica_juego):
-    MAX_ROWS = MAX_COL = len(logica_juego)
-    barcos = [5, 4, 3, 3, 2]  # Tamaños de los barcos
-
-    for barco in barcos:
-        colocado = False
-        while not colocado:
-            orientacion = choice(["H", "V"])  # Horizontal o Vertical
-            if orientacion == "H":
-                fila = randint(0, MAX_ROWS - 1)
-                col = randint(0, MAX_COL - barco)
-                if all(logica_juego[fila][c] == " " for c in range(col, col + barco)):
-                    for c in range(col, col + barco):
-                        logica_juego[fila][
-                            c
-                        ] = "B"  # 'B' representa una parte del barco
-                    colocado = True
-            else:
-                fila = randint(0, MAX_ROWS - barco)
-                col = randint(0, MAX_COL - 1)
-                if all(logica_juego[f][col] == " " for f in range(fila, fila + barco)):
-                    for f in range(fila, fila + barco):
-                        logica_juego[f][col] = "B"
-                    colocado = True
-
-
-# Función para mostrar la grilla en pantalla
-def show_grid_on_screen(window, cellsize, player_grid, p_game_logic):
-    # Dibujar las celdas de la grilla
-    for row_idx, row in enumerate(player_grid):
-        for col_idx, col in enumerate(row):
-            if p_game_logic[row_idx][col_idx] == "B":  # Parte del barco
-                color = (0, 0, 250)  # Azul para partes del barco
-            elif p_game_logic[row_idx][col_idx] == "X":  # Celda seleccionada
-                color = (255, 0, 0)  # Rojo para celdas seleccionadas
-            elif p_game_logic[row_idx][col_idx] == "M":  # Marcada como fallo
-                color = (128, 128, 128)  # Gris para fallos
-            else:
-                color = (255, 255, 255)  # Blanco para celdas no seleccionadas
-            pygame.draw.rect(window, color, (col[0], col[1], cellsize, cellsize))
-            pygame.draw.rect(
-                window, (0, 0, 0), (col[0], col[1], cellsize, cellsize), 1
-            )  # Borde de la celda
-
-    # Añadir el primer borde alrededor de toda la grilla
-    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
-
-    # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 3 es el grosor del borde
-
-    # Añadir el segundo borde, más grande
-    second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = (
-        grid_width + 2 * second_border_padding
-    )  # Ancho del segundo borde
-    second_border_height = (
-        grid_height + 2 * second_border_padding
-    )  # Altura del segundo borde
-    second_top_left_x = (
-        top_left_x - second_border_padding
-    )  # Ajustar la posición X del segundo borde
-    second_top_left_y = (
-        top_left_y - second_border_padding
-    )  # Ajustar la posición Y del segundo borde
-
-    # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(
-        window,
-        (150, 0, 150),
-        (
-            second_top_left_x,
-            second_top_left_y,
-            second_border_width,
-            second_border_height,
-        ),
-        6,
-    )  # 3 es el grosor del segundo borde
-
-    # Añadir el primer borde alrededor de toda la grilla
-    grid_width = len(player_grid[0]) * cellsize  # Ancho total de la grilla
-    grid_height = len(player_grid) * cellsize  # Altura total de la grilla
-    top_left_x = player_grid[0][0][0]  # X de la esquina superior izquierda
-    top_left_y = player_grid[0][0][1]  # Y de la esquina superior izquierda
-
-    # Dibujar el primer borde de la grilla (el más interno)
-    pygame.draw.rect(
-        window, (0, 0, 0), (top_left_x, top_left_y, grid_width, grid_height), 1
-    )  # 1 es el grosor del borde
-
-    # Añadir el segundo borde, más grande
-    second_border_padding = 10  # Distancia entre el primer borde y el segundo
-    second_border_width = (
-        grid_width + 2 * second_border_padding
-    )  # Ancho del segundo borde
-    second_border_height = (
-        grid_height + 2 * second_border_padding
-    )  # Altura del segundo borde
-    second_top_left_x = (
-        top_left_x - second_border_padding
-    )  # Ajustar la posición X del segundo borde
-    second_top_left_y = (
-        top_left_y - second_border_padding
-    )  # Ajustar la posición Y del segundo borde
-
-    # Dibujar el segundo borde (más externo)
-    pygame.draw.rect(
-        window,
-        (150, 0, 150),
-        (
-            second_top_left_x,
-            second_top_left_y,
-            second_border_width,
-            second_border_height,
-        ),
-        6,
-    )  # 6 es el grosor del segundo borde
-
-
 # Función para imprimir la lógica del juego en la consola
-def print_game_logic(p_game_logic):
+def print_game_logic(p_game_logic: list[list[str]]):
     print("Player Grid".center(50))
     for row in p_game_logic:
         print(row)
 
 
-# Función para actualizar la pantalla del juego
-def update_game_screen(window, p_game_grid, p_game_logic):
-    show_grid_on_screen(window, CELLSIZE, p_game_grid, p_game_logic)
-
-
 # Función para calcular el tamaño y la posición de la grilla
-def grid_size(window, rows, cols, cellsize):
+def grid_size(window: pygame.Surface, rows: int, cols: int, cellsize: int):
     screen_width, screen_height = window.get_size()
     grid_width = cols * cellsize
     grid_height = rows * cellsize
@@ -275,61 +154,39 @@ def grid_size(window, rows, cols, cellsize):
     return start_x, start_y
 
 
-# Función para manejar los clics del ratón
-def handle_mouse_click(mouse_pos, grid, cellsize, p_game_logic):
-    for row_idx, row in enumerate(grid):
-        for col_idx, col in enumerate(row):
-            cell_rect = pygame.Rect(col[0], col[1], cellsize, cellsize)
-            if cell_rect.collidepoint(mouse_pos):
-                if p_game_logic[row_idx][col_idx] == "B":  # Clic en barco
-                    p_game_logic[row_idx][col_idx] = "X"  # Marca la celda como acertada
-                elif p_game_logic[row_idx][col_idx] == " ":
-                    p_game_logic[row_idx][col_idx] = "M"  # Marca la celda como fallo
-                print(f"Clicked on cell ({row_idx}, {col_idx})")
-                return  # Salir después del primer clic
-
-
 # Función para manejar los eventos del teclado
-def handle_keyboard_event(event, ask_return_menu):
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_ESCAPE:
-            ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
+def handle_keyboard_event(event: pygame.event.Event, ask_return_menu: bool):
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
     return ask_return_menu
 
 
-def board():
-
-    RUNGAME = True
+def board(match: Match):
+    run_game = True
 
     pygame.init()
-    GAMESCREEN = pygame.display.get_surface()
+    game_surface = pygame.display.get_surface()
     pygame.display.set_caption("Battleship Game")
 
-    p_game_grid_start_pos = grid_size(GAMESCREEN, ROWS, COLS, CELLSIZE)
+    p_game_grid_start_pos = grid_size(game_surface, ROWS, COLS, CELLSIZE)
     p_game_grid = create_game_grid(ROWS, COLS, CELLSIZE, p_game_grid_start_pos)
-    p_game_logic = update_game_logic(ROWS, COLS)
-
-    colocar_barcos(p_game_logic)  # Coloca barcos en la lógica del juego
-    print_game_logic(p_game_logic)
 
     # Cargar música de fondo
     pygame.mixer.init()
     pygame.mixer.music.load("assets/background_music_game.mp3")
 
     # Reproducir música de fondo
-    pygame.mixer.music.play(-1)  # Reproducir en bucle
+    pygame.mixer.music.play(loops=-1)  # Reproducir en bucle
     pygame.mixer.music.set_volume(volume)  # volumen
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
 
     # Cargar el video de fondo
-    video = VideoFileClip("assets/background.mp4")
-    # Rotar el video de fondo
-    video_clip = video.rotate(90)
+    video_clip = cast(VideoClipProtocol, VideoFileClip("assets/background.mp4"))
     start_time = time.time()  # Tiempo de inicio de la reproducción
 
-    overlay_surface = pygame.Surface(GAMESCREEN.get_size())
+    overlay_surface = pygame.Surface(game_surface.get_size())
     overlay_surface.set_alpha(140)
     overlay_surface.fill((0, 0, 0))
 
@@ -344,21 +201,38 @@ def board():
     ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
 
     # Crear una superficie semi-transparente para opacar la grilla
-    overlay_surface = pygame.Surface(GAMESCREEN.get_size())
+    overlay_surface = pygame.Surface(game_surface.get_size())
     overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
-    while RUNGAME:
+    game_board = GameBoard(match, p_game_grid)
+
+    current_player = 0
+    waiting_for_turn_change = False
+    last_move_time = 0
+    winner = None
+    winner_show_start_time = 0
+
+    while run_game:
+        enemy_player = 1 - current_player
+        current_time = time.time()
+
+        # Check if there is a winner
+        if winner is None:
+            winner = match.get_winner()
+            if winner is not None:
+                winner_show_start_time = current_time
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                RUNGAME = False
+                run_game = False
                 pygame.quit()  # Cerramos Pygame al cerrar la ventana
                 sys.exit()  # Cerramos el programa
 
             ask_return_menu = handle_keyboard_event(event, ask_return_menu)
 
             draw_volume_bar(
-                GAMESCREEN, volume
+                game_surface, volume
             )  # Función para dibujar la barra de volumen
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -371,7 +245,7 @@ def board():
 
                 if ask_return_menu:
                     yes_button_rect, no_button_rect = show_menu_options(
-                        GAMESCREEN, font
+                        game_surface, font
                     )
                     if yes_button_rect.collidepoint(mouse_pos):
                         pygame.mixer.music.stop()
@@ -387,34 +261,75 @@ def board():
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
-                    handle_mouse_click(mouse_pos, p_game_grid, CELLSIZE, p_game_logic)
+                    if not waiting_for_turn_change and not winner:
+                        shot_result = game_board.handle_click(
+                            mouse_pos, player=enemy_player
+                        )
+                        print(shot_result)
+                        if shot_result == ShotResult.MISS:
+                            waiting_for_turn_change = True
+                            last_move_time = current_time
+
+        # Check if 2 seconds have passed since the last move
+        if waiting_for_turn_change and current_time - last_move_time >= 2:
+            current_player = 1 - current_player
+            waiting_for_turn_change = False
 
         # Reproducir el video de fondo
-        current_time = time.time() - start_time
-        if current_time >= video_clip.duration:
+        current__video_time = time.time() - start_time
+        if current__video_time >= video_clip.duration:
             start_time = time.time()
 
         frame = video_clip.get_frame(current_time % video_clip.duration)
-        frame_surface = pygame.surfarray.make_surface(np.array(frame))
+        frame_surface = pygame.surfarray.make_surface(np.array(frame))  # type: ignore
+        frame_surface = pygame.transform.rotate(frame_surface, 270)
         frame_surface = pygame.transform.scale(
-            frame_surface, (GAMESCREEN.get_width(), GAMESCREEN.get_height())
+            frame_surface, (game_surface.get_width(), game_surface.get_height())
         )
 
-        GAMESCREEN.blit(frame_surface, (0, 0))
+        game_surface.blit(frame_surface, (0, 0))
 
         # Mostrar el engranaje de configuración
-        draw_menu_button(GAMESCREEN, gear_img)
+        draw_menu_button(game_surface, gear_img)
 
-        update_game_screen(
-            GAMESCREEN, p_game_grid, p_game_logic
-        )  # Mostrar la grilla del juego
+        # Draw the current player title centered at the top
+        current_player_text = font.render(
+            f"Turno de {player_name[current_player]}", True, WHITE
+        )
+        text_rect = current_player_text.get_rect()
+        text_rect.centerx = game_surface.get_width() // 2
+        text_rect.top = 10
+        game_surface.blit(current_player_text, text_rect)
+
+        game_board.draw_enemy_board(
+            game_surface, enemy_player=enemy_player, active=not waiting_for_turn_change
+        )
+
+        # If there is a winner, show message and count time
+        if winner is not None:
+            # Show victory message with black text
+            BLACK = (0, 0, 0)
+            winner_text = font.render(f"¡{player_name[winner]} ha ganado!", True, BLACK)
+            text_rect = winner_text.get_rect()
+            text_rect.centerx = game_surface.get_width() // 2
+            text_rect.centery = game_surface.get_height() // 2
+            game_surface.blit(winner_text, text_rect)
+
+            # If 3 seconds have passed, return to menu
+            if current_time - winner_show_start_time >= 3:
+                pygame.mixer.music.stop()
+                pygame.mixer.init()
+                pygame.mixer.music.load("assets/background_music_menu.mp3")
+                pygame.mixer.music.play(-1)
+                pygame.mixer.music.set_volume(volume)
+                return
 
         if ask_return_menu:
-            GAMESCREEN.blit(overlay_surface, (0, 0))  # Añadir la capa opaca
-            show_menu_options(GAMESCREEN, font)  # Mostrar opciones de menú
-            show_volume_text(GAMESCREEN, font)  # Mostrar texto de volumen
+            game_surface.blit(overlay_surface, (0, 0))  # Añadir la capa opaca
+            show_menu_options(game_surface, font)  # Mostrar opciones de menú
+            show_volume_text(game_surface, font)  # Mostrar texto de volumen
             draw_volume_bar(
-                GAMESCREEN, volume
+                game_surface, volume
             )  # Función para dibujar la barra de volumen
             adjust_volume(*pygame.mouse.get_pos())  # Ajustar el volumen con el mouse
 
@@ -423,7 +338,3 @@ def board():
     # Cerrar Pygame solo cuando se desee salir del juego
     pygame.quit()
     sys.exit()
-
-
-if __name__ == "__main__":
-    board()

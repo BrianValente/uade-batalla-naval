@@ -1,10 +1,9 @@
-import os
 import pygame, sys
 import math  # Para la animación
 
-from uade_battleship.board import board
-from uade_battleship.instructions import instructions
-from uade_battleship.match import match
+from .board import board
+from .instructions import instructions
+from .match import Match
 
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
@@ -17,12 +16,18 @@ pygame.display.set_caption("Menu")
 BG = pygame.image.load("assets/menu_background.jpg")
 
 
-def get_font(size):
+def get_font(size: int) -> pygame.font.Font:
     return pygame.font.Font("assets/font.ttf", size)
 
 
 def play():
-    board()
+    # Create a mocked match for testing
+    match = Match("Player", "CPU")
+    match.add_ship(0, {"x": 0, "y": 0, "size": 2, "orientation": "horizontal"})
+    match.add_ship(0, {"x": 0, "y": 2, "size": 4, "orientation": "vertical"})
+    match.add_ship(1, {"x": 0, "y": 0, "size": 2, "orientation": "horizontal"})
+    match.add_ship(1, {"x": 0, "y": 2, "size": 4, "orientation": "vertical"})
+    board(match)
 
 
 def main_menu():

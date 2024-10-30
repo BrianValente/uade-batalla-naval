@@ -1,10 +1,7 @@
 import os
-import pygame, sys
+import pygame
 
-from uade_battleship.board import board
-from .main_menu import main_menu
 from .portada import portada
-from uade_battleship.match import match
 
 pygame.init()
 SCREEN = pygame.display.set_mode((1280, 720))
