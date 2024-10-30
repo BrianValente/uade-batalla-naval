@@ -9,6 +9,12 @@ class MatchCellState(IntEnum):
     MISS = 3
 
 
+class ShotResult(IntEnum):
+    HIT = 0
+    MISS = 1
+    SUNK = 2
+
+
 class Coord(TypedDict):
     x: int
     y: int

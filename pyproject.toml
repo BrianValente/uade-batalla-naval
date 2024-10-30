@@ -21,3 +21,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 start = "uade_battleship.main:main"
+
+[tool.pyright]
+reportMissingTypeStubs = false
