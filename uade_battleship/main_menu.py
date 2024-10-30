@@ -3,16 +3,18 @@ import pygame, sys
 import math  # Para la animación
 
 from uade_battleship.board import board
+from uade_battleship.instructions import instructions
 from uade_battleship.match import match
 
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
 LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
 WHITE = (255, 255, 255)  # Blanco para el texto
+TRANSLUCENT_BLACK = (0, 0, 0, 128)  # Negro translúcido para superponer sobre el fondo
 
 pygame.display.set_caption("Menu")
 
-BG = pygame.image.load("assets/Background.png")
+BG = pygame.image.load("assets/menu_background.jpg")
 
 
 def get_font(size):
@@ -21,42 +23,6 @@ def get_font(size):
 
 def play():
     board()
-
-
-def options():
-    while True:
-        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
-
-        screen = pygame.display.get_surface()
-        screen.fill(WHITE)  # Fondo blanco para la pantalla de opciones
-
-        OPTIONS_TEXT = get_font(30).render(
-            "This is the OPTIONS screen.", True, DARK_BLUE
-        )
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
-        screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
-
-        OPTIONS_BACK = Button(
-            image=None,
-            pos=(640, 460),
-            text_input="BACK",
-            font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
-        )
-
-        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
-        OPTIONS_BACK.update(screen)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-                    main_menu()
-
-        pygame.display.update()
 
 
 def main_menu():
@@ -111,7 +77,13 @@ def main_menu():
 
     while True:
         screen = pygame.display.get_surface()
-        screen.fill(DARK_BLUE)  # Fondo azul oscuro
+
+        # Dibuja la imagen de fondo y aplica la capa negra translúcida
+        background_scaled = pygame.transform.scale(BG, (1280, 720))
+        screen.blit(background_scaled, (0, 0))
+        overlay = pygame.Surface((1280, 720), pygame.SRCALPHA)
+        overlay.fill(TRANSLUCENT_BLACK)
+        screen.blit(overlay, (0, 0))
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
@@ -162,7 +134,7 @@ def main_menu():
                         if i == 0:
                             play()
                         elif i == 1:
-                            options()
+                            instructions()
                         elif i == 4:
                             pygame.quit()
                             sys.exit()
@@ -195,37 +167,70 @@ pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
 
 # Definición de la clase Button
 class Button:
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+    def __init__(
+        self,
+        image,
+        pos,
+        text_input,
+        font,
+        base_color,
+        hovering_color,
+        border_color=WHITE,
+        border_thickness=2,
+    ):
         self.image = image
         self.x_pos = pos[0]
         self.y_pos = pos[1]
         self.font = font
         self.base_color, self.hovering_color = base_color, hovering_color
         self.text_input = text_input
-        self.text = self.font.render(self.text_input, True, self.base_color)
+        self.border_color = border_color
+        self.border_thickness = border_thickness
+        self.update_text()
+
+    def update_text(self, color=None):
+        # Renderiza el texto con un contorno blanco
+        color = color or self.base_color
+        self.text = self.font.render(self.text_input, True, color)
         text_width, text_height = self.text.get_size()
-        # Adjust button size to fit the text
-        self.image = pygame.Surface((text_width + 20, text_height + 20))
-        self.image.fill((0, 0, 0, 0))  # Transparent background
+
+        # Crear el fondo del texto para que sea transparente y añadir contorno
+        self.image = pygame.Surface(
+            (
+                text_width + 2 * self.border_thickness,
+                text_height + 2 * self.border_thickness,
+            ),
+            pygame.SRCALPHA,
+        )
+
+        # Dibujar el contorno
+        for offset_x in range(-self.border_thickness, self.border_thickness + 1):
+            for offset_y in range(-self.border_thickness, self.border_thickness + 1):
+                if offset_x != 0 or offset_y != 0:
+                    contoured_text = self.font.render(
+                        self.text_input, True, self.border_color
+                    )
+                    self.image.blit(
+                        contoured_text,
+                        (
+                            self.border_thickness + offset_x,
+                            self.border_thickness + offset_y,
+                        ),
+                    )
+
+        # Dibujar el texto principal en el centro
+        self.image.blit(self.text, (self.border_thickness, self.border_thickness))
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-        self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
 
     def update(self, screen):
-        if self.image is not None:
-            screen.blit(self.image, self.rect)
-        screen.blit(self.text, self.text_rect)
+        screen.blit(self.image, self.rect)
 
     def checkForInput(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[
-            1
-        ] in range(self.rect.top, self.rect.bottom):
-            return True
-        return False
+        return self.rect.collidepoint(position)
 
     def changeColor(self, position):
-        if position[0] in range(self.rect.left, self.rect.right) and position[
-            1
-        ] in range(self.rect.top, self.rect.bottom):
-            self.text = self.font.render(self.text_input, True, self.hovering_color)
-        else:
-            self.text = self.font.render(self.text_input, True, self.base_color)
+        color = (
+            self.hovering_color if self.rect.collidepoint(position) else self.base_color
+        )
+        if color != self.text.get_at((0, 0)):
+            self.update_text(color)
