@@ -1,5 +1,9 @@
 import pygame, sys
 import math  # Para la animación
+import random
+from typing import Literal
+
+from uade_battleship.match.match_data import ShipPosition
 
 from .board import board
 from .instructions import instructions
@@ -21,12 +25,54 @@ def get_font(size: int) -> pygame.font.Font:
 
 
 def play():
-    # Create a mocked match for testing
+    # Implementación temporal para testing
+    def generate_random_ship() -> ShipPosition:
+        """Genera un barco random con tamaño entre 3 y 6"""
+        attempts = 0
+        while attempts < 100:  # Límite de intentos para evitar loop infinito
+            try:
+                size = random.randint(3, 6)
+                x = random.randint(0, 9)
+                y = random.randint(0, 9)
+                orientation: Literal["horizontal", "vertical"] = random.choice(
+                    ["horizontal", "vertical"]
+                )
+
+                ship: ShipPosition = {
+                    "x": x,
+                    "y": y,
+                    "size": size,
+                    "orientation": orientation,
+                }
+                return ship
+            except ValueError:
+                attempts += 1
+                continue
+        raise Exception("No se pudo generar un barco válido después de 100 intentos")
+
     match = Match("Player", "CPU")
-    match.add_ship(0, {"x": 0, "y": 0, "size": 2, "orientation": "horizontal"})
-    match.add_ship(0, {"x": 0, "y": 2, "size": 4, "orientation": "vertical"})
-    match.add_ship(1, {"x": 0, "y": 0, "size": 2, "orientation": "horizontal"})
-    match.add_ship(1, {"x": 0, "y": 2, "size": 4, "orientation": "vertical"})
+
+    # Generamos 5 barcos random para cada jugador
+    for player in [0, 1]:  # Player 0 y CPU (player 1)
+        ships_added = 0
+        attempts = 0
+
+        while ships_added < 10 and attempts < 100:  # 5 barcos por jugador
+            try:
+                ship = generate_random_ship()
+                match.add_ship(player, ship)
+                ships_added += 1
+            except (
+                ValueError
+            ):  # Si hay overlap o está fuera de bounds, intentamos de nuevo
+                attempts += 1
+                continue
+
+        if ships_added < 5:
+            raise Exception(
+                f"No se pudieron generar 5 barcos válidos para el jugador {player}"
+            )
+
     board(match)
 
 
