@@ -12,8 +12,8 @@ moviepy = "^1.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-black = "^24.0.0"
-pyright = "^1.1.382.post1"
+black = "^24.1.1"
+pyright = "^1.1.350"
 
 [build-system]
 requires = ["poetry-core"]
@@ -23,4 +23,21 @@ build-backend = "poetry.core.masonry.api"
 start = "uade_battleship.main:main"
 
 [tool.pyright]
+include = ["uade_battleship"]
+exclude = ["**/node_modules", "**/__pycache__"]
+typeCheckingMode = "standard"
+
+reportMissingImports = "error"
 reportMissingTypeStubs = false
+reportUnknownMemberType = true
+reportUnknownVariableType = true
+reportUnknownArgumentType = true
+reportPrivateUsage = "warning"
+reportUntypedFunctionDecorator = "warning"
+reportMissingTypeArgument = "warning"
+reportInvalidTypeVarUse = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+
+pythonVersion = "3.12"
+pythonPlatform = "Linux"

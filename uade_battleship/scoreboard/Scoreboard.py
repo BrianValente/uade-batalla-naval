@@ -1,5 +1,5 @@
 import json
-from typing import TypedDict
+from typing import TypedDict, List
 from uade_battleship.utils import FileStorage
 
 
@@ -12,20 +12,20 @@ class Scoreboard:
     SCOREBOARD_FILE = "scoreboard.json"
 
     @staticmethod
-    def get_scoreboard():
+    def get_scoreboard() -> List[Score]:
         data = FileStorage.read_file(Scoreboard.SCOREBOARD_FILE)
         if data is None:
             return []
 
         json_data = json.loads(data)
-        scores = []
+        scores: List[Score] = []
         for score in json_data:
             scores.append(Score(name=score["name"], score=score["score"]))
         return scores
 
     @staticmethod
-    def save_score(score: Score):
-        scores = Scoreboard.get_scoreboard()
+    def save_score(score: Score) -> None:
+        scores: List[Score] = Scoreboard.get_scoreboard()
 
         # If the score exists (same name and score), don't save it
         for s in scores:
@@ -35,5 +35,5 @@ class Scoreboard:
         scores.append(score)
         scores.sort(key=lambda x: x["score"], reverse=True)
 
-        json_data = json.dumps(scores)
+        json_data = json.dumps([dict(s) for s in scores])
         FileStorage.write_file(Scoreboard.SCOREBOARD_FILE, json_data)

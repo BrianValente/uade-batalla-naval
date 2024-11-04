@@ -1,7 +1,7 @@
 from .FileStorage import FileStorage
 
 
-def Suma(a, b):
-    suma = a + b
+def Suma(a: int, b: int) -> int:
+    suma: int = a + b
 
     return suma
