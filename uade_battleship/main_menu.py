@@ -1,7 +1,10 @@
 import pygame, sys
 import math  # Para la animación
 import random
-from typing import Literal
+from typing import Literal, Tuple, Optional, Union
+from pygame.surface import Surface
+from pygame.rect import Rect
+from pygame.font import Font
 
 from uade_battleship.match.match_data import ShipPosition
 
@@ -171,7 +174,7 @@ def main_menu():
                     if selected_option == 0:
                         play()
                     elif selected_option == 1:
-                        options()
+                        instructions()
                     elif selected_option == 4:  # Salir
                         pygame.quit()
                         sys.exit()
@@ -220,26 +223,34 @@ pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
 class Button:
     def __init__(
         self,
-        image,
-        pos,
-        text_input,
-        font,
-        base_color,
-        hovering_color,
-        border_color=WHITE,
-        border_thickness=2,
+        image: Optional[Surface],
+        pos: Tuple[int, int],
+        text_input: str,
+        font: Font,
+        base_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]],
+        hovering_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]],
+        border_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]] = WHITE,
+        border_thickness: int = 2,
     ):
-        self.image = image
-        self.x_pos = pos[0]
-        self.y_pos = pos[1]
-        self.font = font
-        self.base_color, self.hovering_color = base_color, hovering_color
-        self.text_input = text_input
+        self.image: Surface = (
+            image if image else pygame.Surface((1, 1), pygame.SRCALPHA)
+        )
+        self.x_pos: int = pos[0]
+        self.y_pos: int = pos[1]
+        self.font: Font = font
+        self.base_color = base_color
+        self.hovering_color = hovering_color
+        self.text_input: str = text_input
         self.border_color = border_color
-        self.border_thickness = border_thickness
+        self.border_thickness: int = border_thickness
+        self.text: Surface
+        self.rect: Rect
         self.update_text()
 
-    def update_text(self, color=None):
+    def update_text(
+        self,
+        color: Optional[Union[Tuple[int, int, int], Tuple[int, int, int, int]]] = None,
+    ) -> None:
         # Renderiza el texto con un contorno blanco
         color = color or self.base_color
         self.text = self.font.render(self.text_input, True, color)
@@ -273,13 +284,13 @@ class Button:
         self.image.blit(self.text, (self.border_thickness, self.border_thickness))
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
 
-    def update(self, screen):
+    def update(self, screen: Surface) -> None:
         screen.blit(self.image, self.rect)
 
-    def checkForInput(self, position):
+    def checkForInput(self, position: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(position)
 
-    def changeColor(self, position):
+    def changeColor(self, position: Tuple[int, int]) -> None:
         color = (
             self.hovering_color if self.rect.collidepoint(position) else self.base_color
         )

@@ -1,5 +1,9 @@
 import os
 import pygame, sys
+from typing import Optional, Union, Tuple
+from pygame.surface import Surface
+from pygame.rect import Rect
+from pygame.font import Font
 from .ui import Button
 
 # Inicializar Pygame
@@ -17,25 +21,22 @@ pygame.display.set_caption("Reglas del Juego - Battleship")
 
 
 # Obtener la fuente personalizada
-def get_font(size):
+def get_font(size: int) -> Font:
     return pygame.font.Font("assets/font.ttf", size)
 
 
-# Clase para los botones
-
-
 # Función para mostrar las reglas del juego
-def instructions():
+def instructions() -> None:
     while True:
         screen.fill(DARK_BLUE)
 
-        reglas_text = get_font(40).render("REGLAS DEL JUEGO", True, WHITE)
-        reglas_rect = reglas_text.get_rect(center=(WIDTH // 2, 100))
+        reglas_text: Surface = get_font(40).render("REGLAS DEL JUEGO", True, WHITE)
+        reglas_rect: Rect = reglas_text.get_rect(center=(WIDTH // 2, 100))
         screen.blit(reglas_text, reglas_rect)
 
         # Aquí se pueden añadir más reglas si es necesario
 
-        back_button = Button(
+        back_button: Button = Button(
             image=None,
             pos=(WIDTH // 2, HEIGHT // 2 + 100),
             text_input="Volver",

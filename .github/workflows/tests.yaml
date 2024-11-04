@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+    - main
 
 jobs:
   test:
@@ -11,44 +11,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Clone, install Poetry and run poetry run test and poetry run lint
-      - name: Checkout
-        uses: actions/checkout@v4
+    # Clone, install Poetry and run poetry run test and poetry run lint
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: .venv
-          installer-parallel: true
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        virtualenvs-path: .venv
+        installer-parallel: true
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles('**/poetry.lock') }}
 
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
 
-      - name: Install project
-        run: poetry install --no-interaction
+    - name: Install project
+      run: poetry install --no-interaction
 
-      - name: Run tests
-        run: |
-          source .venv/bin/activate
-          poetry run pytest
+    - name: Run tests
+      run: |
+        source .venv/bin/activate
+        poetry run pytest
 
-      - name: Run linter
-        run: |
-          source .venv/bin/activate
-          poetry run black --check --diff .
+    - name: Run linter
+      run: |
+        source .venv/bin/activate
+        poetry run black --check --diff .
+
+    - name: Run type checker
+      run: |
+        source .venv/bin/activate
+        poetry run pyright
