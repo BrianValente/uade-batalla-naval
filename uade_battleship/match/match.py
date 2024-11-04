@@ -15,6 +15,8 @@ BOARD_SIZE = 10
 class Match:
     match_data: MatchData
 
+    board_size: int = BOARD_SIZE
+
     def __init__(
         self, player_1_name: str = "Player 1", player_2_name: str = "Player 2"
     ):
@@ -27,7 +29,7 @@ class Match:
     def get_players(self) -> tuple[str, str]:
         return self.match_data["player_1"]["name"], self.match_data["player_2"]["name"]
 
-    def add_shot(self, player_shot: int, coord: Coord) -> ShotResult:
+    def add_shot(self, player_receiving_shot: int, coord: Coord) -> ShotResult:
         """
         Add a shot and return the result.
 
@@ -44,7 +46,7 @@ class Match:
         """
         target_player_data = (
             self.match_data["player_1"]
-            if player_shot == 0
+            if player_receiving_shot == 0
             else self.match_data["player_2"]
         )
 
@@ -108,22 +110,15 @@ class Match:
             if ship["y"] + ship["size"] > BOARD_SIZE:
                 raise ValueError("Ship is out of bounds")
 
+        # Get all cells that the new ship would occupy
+        new_ship_cells = self._get_ship_coords(ship)
+
         # Check that ship does not overlap with other ships
         for other_ship in player_data["fleet"]:
-            if ship["orientation"] == "horizontal":
-                if (
-                    ship["y"] == other_ship["y"]
-                    and ship["x"] < other_ship["x"] + other_ship["size"]
-                    and ship["x"] + ship["size"] > other_ship["x"]
-                ):
-                    raise ValueError("Ship overlaps with other ship")
-            else:
-                if (
-                    ship["x"] == other_ship["x"]
-                    and ship["y"] < other_ship["y"] + other_ship["size"]
-                    and ship["y"] + ship["size"] > other_ship["y"]
-                ):
-                    raise ValueError("Ship overlaps with other ship")
+            other_ship_cells = self._get_ship_coords(other_ship)
+            # Si hay alguna celda en común, hay overlap
+            if any(cell in other_ship_cells for cell in new_ship_cells):
+                raise ValueError("Ship overlaps with other ship")
 
         player_data["fleet"].append(ship)
 

@@ -9,6 +9,7 @@ from typing import Any, Callable, Protocol, cast
 from uade_battleship.game_board.game_board import GameBoard
 
 from .match import Match, ShotResult
+from .ai.cpu_ai import CpuAi
 
 
 class VideoClipProtocol(Protocol):
@@ -35,6 +36,8 @@ bar_width = 150
 bar_height = 20
 bar_x = 80  # Coordenada x de la barra
 bar_y = 285  # Coordenada y debajo de los botones
+
+menu_button_rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
 
 
 def draw_menu_button(window: pygame.Surface, gear_img: pygame.Surface):
@@ -206,12 +209,14 @@ def board(match: Match):
     overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
 
     game_board = GameBoard(match, p_game_grid)
+    cpu = CpuAi(match)  # Instanciamos la CPU
 
     current_player = 0
     waiting_for_turn_change = False
     last_move_time = 0
     winner = None
     winner_show_start_time = 0
+    cpu_thinking_start_time = 0  # Para controlar el delay de la CPU
 
     while run_game:
         enemy_player = 1 - current_player
@@ -261,14 +266,29 @@ def board(match: Match):
                     elif no_button_rect.collidepoint(mouse_pos):
                         ask_return_menu = False  # Ocultar el menú y volver al juego
                 else:
-                    if not waiting_for_turn_change and not winner:
+                    if (
+                        not waiting_for_turn_change
+                        and not winner
+                        and current_player == 0
+                    ):
                         shot_result = game_board.handle_click(
                             mouse_pos, player=enemy_player
                         )
-                        print(shot_result)
                         if shot_result == ShotResult.MISS:
                             waiting_for_turn_change = True
                             last_move_time = current_time
+
+        if (
+            current_player == 1 and not waiting_for_turn_change and not winner
+        ):  # Turno de la CPU
+            if cpu_thinking_start_time == 0:  # Si recién empieza el turno de la CPU
+                cpu_thinking_start_time = current_time
+            elif current_time - cpu_thinking_start_time >= 1:  # Si ya pasó 1 segundo
+                shot_result = cpu.play_turn()
+                if shot_result == ShotResult.MISS:
+                    waiting_for_turn_change = True
+                    last_move_time = current_time
+                cpu_thinking_start_time = 0  # Reseteamos para el próximo turno
 
         # Check if 2 seconds have passed since the last move
         if waiting_for_turn_change and current_time - last_move_time >= 2:
