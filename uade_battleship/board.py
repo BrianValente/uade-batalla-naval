@@ -167,7 +167,6 @@ def handle_keyboard_event(event: pygame.event.Event, ask_return_menu: bool):
 def board(match: Match):
     run_game = True
 
-    pygame.init()
     game_surface = pygame.display.get_surface()
     pygame.display.set_caption("Battleship Game")
 
