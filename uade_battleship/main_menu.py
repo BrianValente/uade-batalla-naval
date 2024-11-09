@@ -3,6 +3,7 @@ import math
 import random
 from typing import Literal
 
+from .utils import Settings, SettingsKey
 from .ui import Button
 from .match.match_data import ShipPosition
 from .board import board
@@ -213,4 +214,6 @@ pygame.mixer.music.load("assets/background_music_menu.mp3")
 
 # Reproducir música de fondo
 pygame.mixer.music.play(-1)  # Reproducir en bucle
-pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
+pygame.mixer.music.set_volume(
+    Settings.get(SettingsKey.VOLUME)
+)  # Ajustar el volumen al 50%
