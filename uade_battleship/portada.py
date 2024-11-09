@@ -6,8 +6,6 @@ from pygame.rect import Rect
 from pygame.font import Font
 from uade_battleship.main_menu import main_menu
 
-pygame.init()
-
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
 LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde

@@ -1,13 +1,10 @@
 import pygame, sys
-import math  # Para la animación
+import math
 import random
-from typing import Literal, Tuple, Optional, Union
-from pygame.surface import Surface
-from pygame.rect import Rect
-from pygame.font import Font
+from typing import Literal
 
-from uade_battleship.match.match_data import ShipPosition
-
+from .ui import Button
+from .match.match_data import ShipPosition
 from .board import board
 from .instructions import instructions
 from .match import Match
@@ -92,40 +89,40 @@ def main_menu():
             pos=(640, 200),
             text_input="Comenzar partida",
             font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
+            base_color=DARK_BLUE,
+            hovering_color=LIGHT_BLUE,
         ),
         Button(
             image=None,
             pos=(640, 300),
             text_input="Instrucciones de juego",
             font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
+            base_color=DARK_BLUE,
+            hovering_color=LIGHT_BLUE,
         ),
         Button(
             image=None,
             pos=(640, 400),
             text_input="Configuraciones",
             font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
+            base_color=DARK_BLUE,
+            hovering_color=LIGHT_BLUE,
         ),
         Button(
             image=None,
             pos=(640, 500),
             text_input="Scores",
             font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
+            base_color=DARK_BLUE,
+            hovering_color=LIGHT_BLUE,
         ),
         Button(
             image=None,
             pos=(640, 600),
             text_input="Salir",
             font=get_font(30),
-            base_color=LIGHT_BLUE,
-            hovering_color=WHITE,
+            base_color=DARK_BLUE,
+            hovering_color=LIGHT_BLUE,
         ),
     ]
 
@@ -217,82 +214,3 @@ pygame.mixer.music.load("assets/background_music_menu.mp3")
 # Reproducir música de fondo
 pygame.mixer.music.play(-1)  # Reproducir en bucle
 pygame.mixer.music.set_volume(0.5)  # Ajustar el volumen al 50%
-
-
-# Definición de la clase Button
-class Button:
-    def __init__(
-        self,
-        image: Optional[Surface],
-        pos: Tuple[int, int],
-        text_input: str,
-        font: Font,
-        base_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]],
-        hovering_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]],
-        border_color: Union[Tuple[int, int, int], Tuple[int, int, int, int]] = WHITE,
-        border_thickness: int = 2,
-    ):
-        self.image: Surface = (
-            image if image else pygame.Surface((1, 1), pygame.SRCALPHA)
-        )
-        self.x_pos: int = pos[0]
-        self.y_pos: int = pos[1]
-        self.font: Font = font
-        self.base_color = base_color
-        self.hovering_color = hovering_color
-        self.text_input: str = text_input
-        self.border_color = border_color
-        self.border_thickness: int = border_thickness
-        self.text: Surface
-        self.rect: Rect
-        self.update_text()
-
-    def update_text(
-        self,
-        color: Optional[Union[Tuple[int, int, int], Tuple[int, int, int, int]]] = None,
-    ) -> None:
-        # Renderiza el texto con un contorno blanco
-        color = color or self.base_color
-        self.text = self.font.render(self.text_input, True, color)
-        text_width, text_height = self.text.get_size()
-
-        # Crear el fondo del texto para que sea transparente y añadir contorno
-        self.image = pygame.Surface(
-            (
-                text_width + 2 * self.border_thickness,
-                text_height + 2 * self.border_thickness,
-            ),
-            pygame.SRCALPHA,
-        )
-
-        # Dibujar el contorno
-        for offset_x in range(-self.border_thickness, self.border_thickness + 1):
-            for offset_y in range(-self.border_thickness, self.border_thickness + 1):
-                if offset_x != 0 or offset_y != 0:
-                    contoured_text = self.font.render(
-                        self.text_input, True, self.border_color
-                    )
-                    self.image.blit(
-                        contoured_text,
-                        (
-                            self.border_thickness + offset_x,
-                            self.border_thickness + offset_y,
-                        ),
-                    )
-
-        # Dibujar el texto principal en el centro
-        self.image.blit(self.text, (self.border_thickness, self.border_thickness))
-        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-
-    def update(self, screen: Surface) -> None:
-        screen.blit(self.image, self.rect)
-
-    def checkForInput(self, position: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(position)
-
-    def changeColor(self, position: Tuple[int, int]) -> None:
-        color = (
-            self.hovering_color if self.rect.collidepoint(position) else self.base_color
-        )
-        if color != self.text.get_at((0, 0)):
-            self.update_text(color)
