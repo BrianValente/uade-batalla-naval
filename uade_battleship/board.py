@@ -7,6 +7,7 @@ import time
 from typing import Any, Callable, Protocol, cast
 
 from uade_battleship.game_board.game_board import GameBoard
+from uade_battleship.utils import Settings, SettingsKey
 
 from .match import Match, ShotResult
 from .ai.cpu_ai import CpuAi
@@ -31,7 +32,6 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # Variables del volumen
-volume = 0.5  # Volumen inicial (50%)
 bar_width = 150
 bar_height = 20
 bar_x = 80  # Coordenada x de la barra
@@ -109,6 +109,7 @@ def adjust_volume(mouse_x: int, mouse_y: int):
             volume = (mouse_x - bar_x) / bar_width
             volume = max(0, min(volume, 1))  # Limitar entre 0 y 1
             pygame.mixer.music.set_volume(volume)  # Ajustar el volumen de la música
+            Settings.set(SettingsKey.VOLUME, volume)
     else:
         adjusting_volume = False  # El usuario soltó el mouse
 
@@ -179,7 +180,7 @@ def board(match: Match):
 
     # Reproducir música de fondo
     pygame.mixer.music.play(loops=-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(volume)  # volumen
+    pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME))  # volumen
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -236,7 +237,7 @@ def board(match: Match):
             ask_return_menu = handle_keyboard_event(event, ask_return_menu)
 
             draw_volume_bar(
-                game_surface, volume
+                game_surface, Settings.get(SettingsKey.VOLUME)
             )  # Función para dibujar la barra de volumen
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -259,7 +260,7 @@ def board(match: Match):
                         # Reproducir música de fondo
                         pygame.mixer.music.play(-1)  # Reproducir en bucle
                         pygame.mixer.music.set_volume(
-                            volume
+                            Settings.get(SettingsKey.VOLUME)
                         )  # Ajustar el volumen al 50%
                         return  # se vuelve al menu
                     elif no_button_rect.collidepoint(mouse_pos):
@@ -340,7 +341,9 @@ def board(match: Match):
                 pygame.mixer.init()
                 pygame.mixer.music.load("assets/background_music_menu.mp3")
                 pygame.mixer.music.play(-1)
-                pygame.mixer.music.set_volume(volume)
+                pygame.mixer.music.set_volume(
+                    Settings.get(SettingsKey.VOLUME)
+                )  # Ajustar el volumen al 50%
                 return
 
         if ask_return_menu:
@@ -348,7 +351,7 @@ def board(match: Match):
             show_menu_options(game_surface, font)  # Mostrar opciones de menú
             show_volume_text(game_surface, font)  # Mostrar texto de volumen
             draw_volume_bar(
-                game_surface, volume
+                game_surface, Settings.get(SettingsKey.VOLUME)
             )  # Función para dibujar la barra de volumen
             adjust_volume(*pygame.mouse.get_pos())  # Ajustar el volumen con el mouse
 
