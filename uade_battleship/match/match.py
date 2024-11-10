@@ -11,6 +11,8 @@ from .match_data import (
 
 BOARD_SIZE = 10
 
+SHIP_SIZES = [3, 4, 4, 5, 6]
+
 
 class Match:
     match_data: MatchData

@@ -11,6 +11,7 @@ from uade_battleship.utils import Settings, SettingsKey
 
 from .match import Match, ShotResult
 from .ai.cpu_ai import CpuAi
+from .ui.options_menu import OptionsMenu
 
 
 class VideoClipProtocol(Protocol):
@@ -218,6 +219,8 @@ def board(match: Match):
     winner_show_start_time = 0
     cpu_thinking_start_time = 0  # Para controlar el delay de la CPU
 
+    options_menu = OptionsMenu()
+
     while run_game:
         enemy_player = 1 - current_player
         current_time = time.time()
@@ -234,38 +237,15 @@ def board(match: Match):
                 pygame.quit()  # Cerramos Pygame al cerrar la ventana
                 sys.exit()  # Cerramos el programa
 
-            ask_return_menu = handle_keyboard_event(event, ask_return_menu)
-
-            draw_volume_bar(
-                game_surface, Settings.get(SettingsKey.VOLUME)
-            )  # Función para dibujar la barra de volumen
+            options_menu.handle_keyboard(event)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if menu_button_rect.collidepoint(mouse_pos):
-                    ask_return_menu = (
-                        not ask_return_menu
-                    )  # Alternar la visibilidad del menú
+                if options_menu.handle_click(mouse_pos):
+                    return  # Volver al menú
 
-                if ask_return_menu:
-                    yes_button_rect, no_button_rect = show_menu_options(
-                        game_surface, font
-                    )
-                    if yes_button_rect.collidepoint(mouse_pos):
-                        pygame.mixer.music.stop()
-                        # Cargar música de fondo
-                        pygame.mixer.init()
-                        pygame.mixer.music.load("assets/background_music_menu.mp3")
-                        # Reproducir música de fondo
-                        pygame.mixer.music.play(-1)  # Reproducir en bucle
-                        pygame.mixer.music.set_volume(
-                            Settings.get(SettingsKey.VOLUME)
-                        )  # Ajustar el volumen al 50%
-                        return  # se vuelve al menu
-                    elif no_button_rect.collidepoint(mouse_pos):
-                        ask_return_menu = False  # Ocultar el menú y volver al juego
-                else:
+                if not options_menu.ask_return_menu:
                     if (
                         not waiting_for_turn_change
                         and not winner
@@ -346,14 +326,7 @@ def board(match: Match):
                 )  # Ajustar el volumen al 50%
                 return
 
-        if ask_return_menu:
-            game_surface.blit(overlay_surface, (0, 0))  # Añadir la capa opaca
-            show_menu_options(game_surface, font)  # Mostrar opciones de menú
-            show_volume_text(game_surface, font)  # Mostrar texto de volumen
-            draw_volume_bar(
-                game_surface, Settings.get(SettingsKey.VOLUME)
-            )  # Función para dibujar la barra de volumen
-            adjust_volume(*pygame.mouse.get_pos())  # Ajustar el volumen con el mouse
+        options_menu.draw(game_surface)
 
         pygame.display.update()
 
