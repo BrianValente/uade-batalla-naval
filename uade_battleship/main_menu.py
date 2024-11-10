@@ -8,7 +8,8 @@ from .ui import Button
 from .match.match_data import ShipPosition
 from .board import board
 from .instructions import instructions
-from .match import Match
+from .match import Match, SHIP_SIZES
+from .ship_placement import ship_placement
 
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
@@ -26,54 +27,109 @@ def get_font(size: int) -> pygame.font.Font:
 
 
 def play():
-    # Implementación temporal para testing
-    def generate_random_ship() -> ShipPosition:
-        """Genera un barco random con tamaño entre 3 y 6"""
-        attempts = 0
-        while attempts < 100:  # Límite de intentos para evitar loop infinito
-            try:
-                size = random.randint(3, 6)
-                x = random.randint(0, 9)
-                y = random.randint(0, 9)
-                orientation: Literal["horizontal", "vertical"] = random.choice(
-                    ["horizontal", "vertical"]
-                )
+    cpu_ships: list[ShipPosition] = []
 
-                ship: ShipPosition = {
-                    "x": x,
-                    "y": y,
-                    "size": size,
-                    "orientation": orientation,
-                }
-                return ship
-            except ValueError:
-                attempts += 1
-                continue
-        raise Exception("No se pudo generar un barco válido después de 100 intentos")
+    def generate_random_ship_position(
+        size: int, cpu_ships: list[ShipPosition]
+    ) -> ShipPosition:
+        # Lista para guardar todas las posiciones válidas
+        valid_positions: list[ShipPosition] = []
+
+        # Chequeamos cada celda del tablero
+        for y in range(10):
+            for x in range(10):
+                # Probamos orientación horizontal
+                if x + size <= 10:  # Si el barco entra horizontalmente
+                    # Creamos el ship para testear
+                    ship_horizontal: ShipPosition = {
+                        "x": x,
+                        "y": y,
+                        "size": size,
+                        "orientation": "horizontal",
+                    }
+
+                    # Conseguimos coordenadas del barco horizontal
+                    horizontal_coords = set((x + dx, y) for dx in range(size))
+
+                    # Asumimos que es válida hasta que se demuestre lo contrario
+                    valid_horizontal = True
+
+                    # Chequeamos overlap con cada barco existente
+                    for existing_ship in cpu_ships:
+                        existing_coords: set[tuple[int, int]] = set()
+                        if existing_ship["orientation"] == "horizontal":
+                            existing_coords = set(
+                                (existing_ship["x"] + dx, existing_ship["y"])
+                                for dx in range(existing_ship["size"])
+                            )
+                        else:
+                            existing_coords = set(
+                                (existing_ship["x"], existing_ship["y"] + dy)
+                                for dy in range(existing_ship["size"])
+                            )
+
+                        if horizontal_coords & existing_coords:
+                            valid_horizontal = False
+                            break
+
+                    if valid_horizontal:
+                        valid_positions.append(ship_horizontal)
+
+                # Probamos orientación vertical
+                if y + size <= 10:  # Si el barco entra verticalmente
+                    ship_vertical: ShipPosition = {
+                        "x": x,
+                        "y": y,
+                        "size": size,
+                        "orientation": "vertical",
+                    }
+
+                    # Conseguimos coordenadas del barco vertical
+                    vertical_coords = set((x, y + dy) for dy in range(size))
+
+                    # Asumimos que es válida hasta que se demuestre lo contrario
+                    valid_vertical = True
+
+                    # Chequeamos overlap con cada barco existente
+                    for existing_ship in cpu_ships:
+                        existing_coords = set()
+                        if existing_ship["orientation"] == "horizontal":
+                            existing_coords = set(
+                                (existing_ship["x"] + dx, existing_ship["y"])
+                                for dx in range(existing_ship["size"])
+                            )
+                        else:
+                            existing_coords = set(
+                                (existing_ship["x"], existing_ship["y"] + dy)
+                                for dy in range(existing_ship["size"])
+                            )
+
+                        if vertical_coords & existing_coords:
+                            valid_vertical = False
+                            break
+
+                    if valid_vertical:
+                        valid_positions.append(ship_vertical)
+
+        # Si no hay posiciones válidas, lanzamos error
+        if not valid_positions:
+            raise ValueError("No se encontraron posiciones válidas para el barco")
+
+        # Devolvemos una posición random de las válidas
+        return random.choice(valid_positions)
 
     match = Match("Player", "CPU")
 
-    # Generamos 5 barcos random para cada jugador
-    for player in [0, 1]:  # Player 0 y CPU (player 1)
-        ships_added = 0
-        attempts = 0
+    # Primero vamos a la pantalla de posicionamiento
+    if not ship_placement(match):
+        return
 
-        while ships_added < 10 and attempts < 100:  # 5 barcos por jugador
-            try:
-                ship = generate_random_ship()
-                match.add_ship(player, ship)
-                ships_added += 1
-            except (
-                ValueError
-            ):  # Si hay overlap o está fuera de bounds, intentamos de nuevo
-                attempts += 1
-                continue
+    for size in SHIP_SIZES:
+        ship = generate_random_ship_position(size, cpu_ships)
+        cpu_ships.append(ship)
+        match.add_ship(1, ship)
 
-        if ships_added < 5:
-            raise Exception(
-                f"No se pudieron generar 5 barcos válidos para el jugador {player}"
-            )
-
+    # Luego vamos a la pantalla de juego
     board(match)
 
 

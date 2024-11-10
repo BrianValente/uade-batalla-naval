@@ -1,4 +1,4 @@
-from .match import Match
+from .match import Match, SHIP_SIZES
 from .match_data import (
     MatchCellState,
     Coord,
