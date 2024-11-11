@@ -1,1 +1,1 @@
-from .Scoreboard import Scoreboard
+from .Scoreboard import Scoreboard, Score
