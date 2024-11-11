@@ -187,16 +187,41 @@ def draw_stats(
         f"Barcos dañados: {current_stats['ships_damaged']}",
     ]
 
+    # Calcular el ancho máximo de los textos del jugador
+    max_width = max(font.size(text)[0] for text in stats_texts)
+    total_height = len(stats_texts) * 30  # 30 es el espaciado vertical entre líneas
+
+    # Configuración del fondo negro semi-transparente para jugador
+    background = pygame.Surface((max_width + 20, total_height + 20))  # +20 para padding
+    background.set_alpha(128)
+    background.fill((0, 0, 0))
+
+    # Dibujamos el fondo para stats del jugador
+    window.blit(background, (player_stats_x - 10, stats_y - 10))
+
     for i, text in enumerate(stats_texts):
         text_surface = font.render(text, True, WHITE)
         window.blit(text_surface, (player_stats_x, stats_y + i * 30))
 
     # Stats del enemigo (lado derecho)
     enemy_stats_x = window.get_width() - 250
+
     enemy_stats_texts = [
         f"Tablero enemigo",
         f"Barcos hundidos: {enemy_stats['ships_sunk']}",
     ]
+
+    # Calcular el ancho máximo de los textos del enemigo
+    enemy_max_width = max(font.size(text)[0] for text in enemy_stats_texts)
+    enemy_total_height = len(enemy_stats_texts) * 30
+
+    # Configuración del fondo negro semi-transparente para enemigo
+    enemy_background = pygame.Surface((enemy_max_width + 20, enemy_total_height + 20))
+    enemy_background.set_alpha(128)
+    enemy_background.fill((0, 0, 0))
+
+    # Dibujamos el fondo para stats del enemigo
+    window.blit(enemy_background, (enemy_stats_x - 10, stats_y - 10))
 
     for i, text in enumerate(enemy_stats_texts):
         text_surface = font.render(text, True, WHITE)
@@ -365,6 +390,12 @@ def board(match: Match):
         text_rect = current_player_text.get_rect()
         text_rect.centerx = game_surface.get_width() // 2
         text_rect.top = 10
+
+        # Fondo negro para el texto del jugador actual
+        background = pygame.Surface((text_rect.width + 20, text_rect.height + 10))
+        background.set_alpha(128)
+        background.fill((0, 0, 0))
+        game_surface.blit(background, (text_rect.x - 10, text_rect.y - 5))
         game_surface.blit(current_player_text, text_rect)
 
         game_board.draw_enemy_board(
@@ -379,11 +410,17 @@ def board(match: Match):
             # Show victory message with black text
             BLACK = (0, 0, 0)
             winner_text = font.render(
-                f"¡{player_name[winner['number']]} ha ganado!", True, BLACK
+                f"¡{player_name[winner['number']]} ha ganado!", True, WHITE
             )
             text_rect = winner_text.get_rect()
             text_rect.centerx = game_surface.get_width() // 2
             text_rect.centery = game_surface.get_height() // 2
+
+            # Fondo negro para el mensaje de victoria
+            background = pygame.Surface((text_rect.width + 40, text_rect.height + 20))
+            background.set_alpha(160)  # Un poco más opaco para el mensaje de victoria
+            background.fill((0, 0, 0))
+            game_surface.blit(background, (text_rect.x - 20, text_rect.y - 10))
             game_surface.blit(winner_text, text_rect)
 
             # If 3 seconds have passed, return to menu
