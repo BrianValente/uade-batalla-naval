@@ -21,6 +21,11 @@ class WinnerInfo(TypedDict):
     score: int
 
 
+class PlayerStats(TypedDict):
+    ships_sunk: int
+    ships_damaged: int
+
+
 class Match:
     match_data: MatchData
 
@@ -247,3 +252,22 @@ class Match:
             return [{"x": ship["x"] + i, "y": ship["y"]} for i in range(ship["size"])]
         else:
             return [{"x": ship["x"], "y": ship["y"] + i} for i in range(ship["size"])]
+
+    def get_player_stats(self, player_number: int) -> PlayerStats:
+        player = (
+            self.match_data["player_1"]
+            if player_number == 0
+            else self.match_data["player_2"]
+        )
+
+        ships_sunk = len(self.get_sunken_ships(player_number))
+        ships_damaged = -ships_sunk
+
+        for ship in player["fleet"]:
+            if any(c in player["shots_received"] for c in self._get_ship_coords(ship)):
+                ships_damaged += 1
+
+        return {
+            "ships_sunk": ships_sunk,
+            "ships_damaged": ships_damaged,
+        }
