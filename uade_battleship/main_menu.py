@@ -10,6 +10,7 @@ from .board import board
 from .instructions import instructions
 from .match import Match, SHIP_SIZES
 from .ship_placement import ship_placement
+from .scoreboard_screen import scoreboard_screen
 
 # Colores
 DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
@@ -229,6 +230,8 @@ def main_menu():
                         play()
                     elif selected_option == 1:
                         instructions()
+                    elif selected_option == 3:  # Opción de Scores
+                        scoreboard_screen()
                     elif selected_option == 4:  # Salir
                         pygame.quit()
                         sys.exit()
@@ -243,6 +246,8 @@ def main_menu():
                             play()
                         elif i == 1:
                             instructions()
+                        elif i == 3:  # Opción de Scores
+                            scoreboard_screen()
                         elif i == 4:
                             pygame.quit()
                             sys.exit()

@@ -1,4 +1,5 @@
 import json
+from typing import TypedDict
 from uade_battleship.utils import FileStorage
 from .match_data import (
     MatchCellState,
@@ -12,6 +13,12 @@ from .match_data import (
 BOARD_SIZE = 10
 
 SHIP_SIZES = [3, 4, 4, 5, 6]
+
+
+class WinnerInfo(TypedDict):
+    name: str
+    number: int
+    score: int
 
 
 class Match:
@@ -199,22 +206,30 @@ class Match:
 
         return sunken_ships
 
-    def get_winner(self) -> int | None:
+    def get_winner(self) -> WinnerInfo | None:
         """
         Check if there's a winner.
 
         Returns:
-            int | None: The winning player number (0 or 1) if there's a winner, None otherwise.
+            dict | None: A dictionary with winner info (name, number, score) if there's a winner, None otherwise.
         """
         # Check if all player 1's ships are sunk
         player_0_ships = self.get_sunken_ships(0)
         if len(player_0_ships) == len(self.match_data["player_1"]["fleet"]):
-            return 1  # Player 1 wins
+            return {
+                "name": self.match_data["player_2"]["name"],
+                "number": 1,
+                "score": len(self.match_data["player_1"]["shots_received"]),
+            }
 
         # Check if all player 2's ships are sunk
         player_1_ships = self.get_sunken_ships(1)
         if len(player_1_ships) == len(self.match_data["player_2"]["fleet"]):
-            return 0  # Player 0 wins
+            return {
+                "name": self.match_data["player_1"]["name"],
+                "number": 0,
+                "score": len(self.match_data["player_2"]["shots_received"]),
+            }
 
         return None  # No winner yet
 

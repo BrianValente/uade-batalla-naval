@@ -12,6 +12,7 @@ from uade_battleship.utils import Settings, SettingsKey
 from .match import Match, ShotResult
 from .ai.cpu_ai import CpuAi
 from .ui.options_menu import OptionsMenu
+from .scoreboard.Scoreboard import Scoreboard
 
 
 class VideoClipProtocol(Protocol):
@@ -218,6 +219,7 @@ def board(match: Match):
     winner = None
     winner_show_start_time = 0
     cpu_thinking_start_time = 0  # Para controlar el delay de la CPU
+    score_saved = False  # Nueva variable para controlar si ya guardamos el score
 
     options_menu = OptionsMenu()
 
@@ -230,6 +232,12 @@ def board(match: Match):
             winner = match.get_winner()
             if winner is not None:
                 winner_show_start_time = current_time
+                # Si el ganador es el jugador humano (número 0) y no guardamos el score todavía
+                if winner["number"] == 0 and not score_saved:
+                    Scoreboard.save_score(
+                        {"name": winner["name"], "score": winner["score"]}
+                    )
+                    score_saved = True
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -309,7 +317,9 @@ def board(match: Match):
         if winner is not None:
             # Show victory message with black text
             BLACK = (0, 0, 0)
-            winner_text = font.render(f"¡{player_name[winner]} ha ganado!", True, BLACK)
+            winner_text = font.render(
+                f"¡{player_name[winner['number']]} ha ganado!", True, BLACK
+            )
             text_rect = winner_text.get_rect()
             text_rect.centerx = game_surface.get_width() // 2
             text_rect.centery = game_surface.get_height() // 2
@@ -321,9 +331,7 @@ def board(match: Match):
                 pygame.mixer.init()
                 pygame.mixer.music.load("assets/background_music_menu.mp3")
                 pygame.mixer.music.play(-1)
-                pygame.mixer.music.set_volume(
-                    Settings.get(SettingsKey.VOLUME)
-                )  # Ajustar el volumen al 50%
+                pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME))
                 return
 
         options_menu.draw(game_surface)
