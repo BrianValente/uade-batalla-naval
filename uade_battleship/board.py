@@ -167,6 +167,42 @@ def handle_keyboard_event(event: pygame.event.Event, ask_return_menu: bool):
     return ask_return_menu
 
 
+def draw_stats(
+    window: pygame.Surface,
+    font: pygame.font.Font,
+    match: Match,
+):
+    # Stats del jugador actual
+    current_stats = match.get_player_stats(0)
+    enemy_stats = match.get_player_stats(1)
+
+    # Posición para stats del jugador actual (lado izquierdo)
+    player_stats_x = 50
+    stats_y = 300
+
+    # Stats del jugador actual
+    stats_texts = [
+        f"Tu tablero",
+        f"Barcos hundidos: {current_stats['ships_sunk']}",
+        f"Barcos dañados: {current_stats['ships_damaged']}",
+    ]
+
+    for i, text in enumerate(stats_texts):
+        text_surface = font.render(text, True, WHITE)
+        window.blit(text_surface, (player_stats_x, stats_y + i * 30))
+
+    # Stats del enemigo (lado derecho)
+    enemy_stats_x = window.get_width() - 250
+    enemy_stats_texts = [
+        f"Tablero enemigo",
+        f"Barcos hundidos: {enemy_stats['ships_sunk']}",
+    ]
+
+    for i, text in enumerate(enemy_stats_texts):
+        text_surface = font.render(text, True, WHITE)
+        window.blit(text_surface, (enemy_stats_x, stats_y + i * 30))
+
+
 def board(match: Match):
     run_game = True
 
@@ -182,7 +218,9 @@ def board(match: Match):
 
     # Reproducir música de fondo
     pygame.mixer.music.play(loops=-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME) * 0.5)  # volumen al 50%
+    pygame.mixer.music.set_volume(
+        Settings.get(SettingsKey.VOLUME) * 0.5
+    )  # volumen al 50%
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -227,7 +265,7 @@ def board(match: Match):
     hit_sound = pygame.mixer.Sound("assets/hit.mp3")
     miss_sound = pygame.mixer.Sound("assets/miss.mp3")
     sunk_sound = pygame.mixer.Sound("assets/sunk.mp3")
-    
+
     # Ajustar volumen inicial de los efectos
     hit_sound.set_volume(Settings.get(SettingsKey.VOLUME))
     miss_sound.set_volume(Settings.get(SettingsKey.VOLUME))
@@ -332,6 +370,9 @@ def board(match: Match):
         game_board.draw_enemy_board(
             game_surface, enemy_player=enemy_player, active=not waiting_for_turn_change
         )
+
+        # Agregar esta línea antes del if winner
+        draw_stats(game_surface, font, match)
 
         # If there is a winner, show message and count time
         if winner is not None:
