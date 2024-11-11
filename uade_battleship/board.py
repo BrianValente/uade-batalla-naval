@@ -182,7 +182,7 @@ def board(match: Match):
 
     # Reproducir música de fondo
     pygame.mixer.music.play(loops=-1)  # Reproducir en bucle
-    pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME))  # volumen
+    pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME) * 0.5)  # volumen al 50%
 
     if not pygame.mixer.get_init():
         print("Error al cargar la música de fondo")
@@ -222,6 +222,16 @@ def board(match: Match):
     score_saved = False  # Nueva variable para controlar si ya guardamos el score
 
     options_menu = OptionsMenu()
+
+    # Cargar los efectos de sonido
+    hit_sound = pygame.mixer.Sound("assets/hit.mp3")
+    miss_sound = pygame.mixer.Sound("assets/miss.mp3")
+    sunk_sound = pygame.mixer.Sound("assets/sunk.mp3")
+    
+    # Ajustar volumen inicial de los efectos
+    hit_sound.set_volume(Settings.get(SettingsKey.VOLUME))
+    miss_sound.set_volume(Settings.get(SettingsKey.VOLUME))
+    sunk_sound.set_volume(Settings.get(SettingsKey.VOLUME))
 
     while run_game:
         enemy_player = 1 - current_player
@@ -263,8 +273,13 @@ def board(match: Match):
                             mouse_pos, player=enemy_player
                         )
                         if shot_result == ShotResult.MISS:
+                            miss_sound.play()
                             waiting_for_turn_change = True
                             last_move_time = current_time
+                        elif shot_result == ShotResult.HIT:
+                            hit_sound.play()
+                        elif shot_result == ShotResult.SUNK:
+                            sunk_sound.play()
 
         if (
             current_player == 1 and not waiting_for_turn_change and not winner
@@ -274,8 +289,13 @@ def board(match: Match):
             elif current_time - cpu_thinking_start_time >= 1:  # Si ya pasó 1 segundo
                 shot_result = cpu.play_turn()
                 if shot_result == ShotResult.MISS:
+                    miss_sound.play()
                     waiting_for_turn_change = True
                     last_move_time = current_time
+                elif shot_result == ShotResult.HIT:
+                    hit_sound.play()
+                elif shot_result == ShotResult.SUNK:
+                    sunk_sound.play()
                 cpu_thinking_start_time = 0  # Reseteamos para el próximo turno
 
         # Check if 2 seconds have passed since the last move
@@ -331,7 +351,7 @@ def board(match: Match):
                 pygame.mixer.init()
                 pygame.mixer.music.load("assets/background_music_menu.mp3")
                 pygame.mixer.music.play(-1)
-                pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME))
+                pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME) * 0.5)
                 return
 
         options_menu.draw(game_surface)
