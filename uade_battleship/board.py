@@ -20,8 +20,6 @@ class VideoClipProtocol(Protocol):
     get_frame: Callable[[float], Any]
 
 
-player_name = ["Player 1", "CPU"]
-
 # Configuración inicial
 ROWS = 10
 COLS = 10
@@ -384,8 +382,13 @@ def board(match: Match):
         draw_menu_button(game_surface, gear_img)
 
         # Draw the current player title centered at the top
+        current_player_name = (
+            match.match_data["player_1"]["name"]
+            if current_player == 0
+            else match.match_data["player_2"]["name"]
+        )
         current_player_text = font.render(
-            f"Turno de {player_name[current_player]}", True, WHITE
+            f"Turno de {current_player_name}", True, WHITE
         )
         text_rect = current_player_text.get_rect()
         text_rect.centerx = game_surface.get_width() // 2
@@ -409,9 +412,7 @@ def board(match: Match):
         if winner is not None:
             # Show victory message with black text
             BLACK = (0, 0, 0)
-            winner_text = font.render(
-                f"¡{player_name[winner['number']]} ha ganado!", True, WHITE
-            )
+            winner_text = font.render(f"¡{winner['name']} ha ganado!", True, WHITE)
             text_rect = winner_text.get_rect()
             text_rect.centerx = game_surface.get_width() // 2
             text_rect.centery = game_surface.get_height() // 2
