@@ -7,6 +7,7 @@ import numpy as np
 import time
 from .ui.Button import Button
 from .ui.options_menu import OptionsMenu
+from .ui.TextInput import TextInput
 
 # Constantes
 CELLSIZE = 40
@@ -136,7 +137,16 @@ def ship_placement(match: Match) -> bool:
 
     font = pygame.font.Font(None, 36)
 
-    # Crear el botón de continuar
+    # Create text input for player name
+    player_name_input = TextInput(
+        pos=(screen_width // 2, grid_y - 50),  # 50px above the grid
+        font=font,
+        text="Player",
+        base_color=WHITE,
+        selected_color=GREEN,
+    )
+
+    # Create continue button
     continue_button = Button(
         image=None,
         pos=(
@@ -260,7 +270,11 @@ def ship_placement(match: Match) -> bool:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Click izquierdo
                     if all_valid and continue_button.checkForInput(event.pos):
-                        # Agregar todos los barcos a la partida
+                        # Update player name before adding ships
+                        match.match_data["player_1"][
+                            "name"
+                        ] = player_name_input.get_text()
+                        # Add all ships to the match
                         for ship in ships:
                             match.add_ship(0, ship.ship_position)
                         return True
@@ -349,7 +363,13 @@ def ship_placement(match: Match) -> bool:
                 if options_menu.handle_click(event.pos):
                     return False
 
-        # Dibujar barcos
+            # Add text input handling
+            player_name_input.handle_event(event)
+
+        # Draw text input
+        player_name_input.draw(screen)
+
+        # Draw ships
         for ship in ships:
             ship.draw(screen, (grid_x, grid_y))
 
