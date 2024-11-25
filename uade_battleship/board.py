@@ -183,7 +183,7 @@ def draw_stats(
     # Stats del jugador actual
     stats_texts = [
         f"Tu tablero",
-        f"Barcos hundidos: {current_stats['ships_sunk']}",
+        f"Barcos hundidos: {current_stats['ships_sunk']}/{len(match.match_data['player_1']['fleet'])}",
         f"Barcos dañados: {current_stats['ships_damaged']}",
     ]
 
@@ -208,7 +208,7 @@ def draw_stats(
 
     enemy_stats_texts = [
         f"Tablero enemigo",
-        f"Barcos hundidos: {enemy_stats['ships_sunk']}",
+        f"Barcos hundidos: {enemy_stats['ships_sunk']}/{len(match.match_data['player_2']['fleet'])}",
     ]
 
     # Calcular el ancho máximo de los textos del enemigo
