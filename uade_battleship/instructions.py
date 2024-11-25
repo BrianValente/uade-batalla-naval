@@ -1,30 +1,25 @@
 import os
 import pygame, sys
-from typing import Optional, Union, Tuple, List
+from typing import List
 from pygame.surface import Surface
 from pygame.rect import Rect
 from pygame.font import Font
 from .ui import Button
 
-# Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
-WHITE = (255, 255, 255)  # Blanco para el texto
-
-# Dimensiones de la pantalla
-WIDTH, HEIGHT = 1280, 720
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Reglas del Juego - Battleship")
-
-# Reglas del juego (textos más cortos y concisos)
+DARK_BLUE = (0, 0, 139)
+LIGHT_BLUE = (0, 191, 255)
+WHITE = (255, 255, 255)
 GAME_RULES: List[str] = [
-    "• Tablero de 10x10 para cada jugador",
-    "• Barcos de 3 a 6 casillas",
-    "• Colocación horizontal o vertical",
-    "• Click en el tablero enemigo para disparar",
-    "• Rojo = Impacto | Gris = Agua | Negro = Barco enemigo hundido",
-    "• Gana quien hunda todos los barcos enemigos",
-    "• ¡Usá estrategia para ganar!",
+    "1. Cada jugador tiene un tablero con una cuadrícula de filas y columnas. Los barcos se colocan",
+    "   estratégicamente de forma horizontal o vertical (no en diagonal).",
+    "2. Los barcos no pueden superponerse ni salirse del tablero.",
+    "   ¡La ubicación de tus barcos es un secreto!",
+    "3. Por turnos, atacás el tablero enemigo eligiendo una coordenada:",
+    "   • GRIS = Agua (no le diste a nada)",
+    "   • ROJO = Impacto (le diste a un barco)",
+    "   • NEGRO = Barco hundido (le diste a todas sus casillas)",
+    "4. Gana el primero en hundir todos los barcos enemigos.",
+    "5. Si tu disparo cae en agua, perdés el turno.",
 ]
 
 
@@ -33,24 +28,28 @@ def get_font(size: int) -> Font:
 
 
 def instructions() -> None:
+    screen = pygame.display.get_surface()
+    width, height = screen.get_size()
+
     while True:
         screen.fill(DARK_BLUE)
 
         # Título
         reglas_text: Surface = get_font(40).render("REGLAS DEL JUEGO", True, WHITE)
-        reglas_rect: Rect = reglas_text.get_rect(center=(WIDTH // 2, 100))
+        reglas_rect: Rect = reglas_text.get_rect(center=(width // 2, 100))
         screen.blit(reglas_text, reglas_rect)
 
-        # Mostrar las reglas (centradas y con menos espacio vertical)
+        # Mostrar las reglas (alineadas a la izquierda con margen de 100px)
+        margin_left = 100
         for i, rule in enumerate(GAME_RULES):
-            rule_text: Surface = get_font(18).render(rule, True, WHITE)
-            rule_rect: Rect = rule_text.get_rect(center=(WIDTH // 2, 200 + i * 40))
+            rule_text: Surface = get_font(12).render(rule, True, WHITE)
+            rule_rect: Rect = rule_text.get_rect(topleft=(margin_left, 200 + i * 40))
             screen.blit(rule_text, rule_rect)
 
         # Botón de volver
         back_button: Button = Button(
             image=None,
-            pos=(WIDTH // 2, HEIGHT - 100),
+            pos=(width // 2, height - 75),
             text_input="Volver al Menú",
             font=get_font(30),
             base_color=DARK_BLUE,
