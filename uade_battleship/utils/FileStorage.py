@@ -40,3 +40,11 @@ class FileStorage:
 
         with open(path, "w") as file:
             file.write(content)
+
+    @staticmethod
+    def delete_file(path: str) -> None:
+        """
+        Deletes a file.
+        """
+        path = f"{FileStorage.PREFIX}{path}"
+        os.remove(path)
