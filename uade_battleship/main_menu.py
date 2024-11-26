@@ -131,7 +131,16 @@ def play():
         cpu_ships.append(ship)
         match.add_ship(1, ship)
 
+    match.save()
+
     # Luego vamos a la pantalla de juego
+    board(match)
+
+
+def continue_game():
+    match = Match.get_last_save()
+    if not match:
+        return
     board(match)
 
 
@@ -141,43 +150,51 @@ def main_menu():
     selected_option = 0  # Índice de la opción seleccionada
     mouse_used = False  # Bandera para detectar si el mouse fue usado
 
+    last_save = Match.get_last_save()
+
     # Definimos la lista de botones
-    buttons = [
+    # Mostramos el botón de continuar partida si hay una partida guardada
+    initial_buttons = [
         Button(
+            id="start_game",
             image=None,
-            pos=(640, 200),
+            pos=(0, 0),
             text_input="Comenzar partida",
             font=get_font(30),
             base_color=DARK_BLUE,
             hovering_color=LIGHT_BLUE,
         ),
         Button(
+            id="instructions",
             image=None,
-            pos=(640, 300),
+            pos=(0, 0),
             text_input="Instrucciones de juego",
             font=get_font(30),
             base_color=DARK_BLUE,
             hovering_color=LIGHT_BLUE,
         ),
         Button(
+            id="settings",
             image=None,
-            pos=(640, 400),
+            pos=(0, 0),
             text_input="Configuraciones",
             font=get_font(30),
             base_color=DARK_BLUE,
             hovering_color=LIGHT_BLUE,
         ),
         Button(
+            id="scores",
             image=None,
-            pos=(640, 500),
+            pos=(0, 0),
             text_input="Scores",
             font=get_font(30),
             base_color=DARK_BLUE,
             hovering_color=LIGHT_BLUE,
         ),
         Button(
+            id="exit",
             image=None,
-            pos=(640, 600),
+            pos=(0, 0),
             text_input="Salir",
             font=get_font(30),
             base_color=DARK_BLUE,
@@ -185,8 +202,22 @@ def main_menu():
         ),
     ]
 
+    last_save_button = Button(
+        id="continue_game",
+        image=None,
+        pos=(0, 0),
+        text_input="Continuar partida",
+        font=get_font(30),
+        base_color=DARK_BLUE,
+        hovering_color=LIGHT_BLUE,
+    )
+
     while True:
         screen = pygame.display.get_surface()
+
+        buttons = initial_buttons.copy()
+        if last_save:
+            buttons.insert(0, last_save_button)
 
         # Dibuja la imagen de fondo y aplica la capa negra translúcida
         background_scaled = pygame.transform.scale(BG, (1280, 720))
@@ -212,7 +243,9 @@ def main_menu():
         # Actualizar colores y posición de botones
         for i, button in enumerate(buttons):
             button.changeColor(MENU_MOUSE_POS)
-            button.update(screen)
+            button.update(
+                screen, position=(640, 220 + (i + (0 if last_save else 1)) * 80)
+            )
 
         # Mover entre opciones con teclas y mouse
         for event in pygame.event.get():
@@ -227,15 +260,20 @@ def main_menu():
                     selected_option = (selected_option - 1) % len(buttons)
                     mouse_used = False  # Reseteamos el uso del mouse
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
-                    if selected_option == 0:
+                    selected_button = buttons[selected_option]
+                    if selected_button.id == "start_game":
                         play()
-                    elif selected_option == 1:
+                        last_save = Match.get_last_save()
+                    elif selected_button.id == "continue_game":
+                        continue_game()
+                        last_save = Match.get_last_save()
+                    elif selected_button.id == "instructions":
                         instructions()
-                    elif selected_option == 2:  # Opción de Configuraciones
+                    elif selected_button.id == "settings":  # Opción de Configuraciones
                         settings_screen()
-                    elif selected_option == 3:  # Opción de Scores
+                    elif selected_button.id == "scores":
                         scoreboard_screen()
-                    elif selected_option == 4:  # Salir
+                    elif selected_button.id == "exit":
                         pygame.quit()
                         sys.exit()
 
@@ -245,15 +283,22 @@ def main_menu():
                 for i, button in enumerate(buttons):
                     if button.checkForInput(MENU_MOUSE_POS):
                         selected_option = i
-                        if i == 0:
+                        selected_button = buttons[selected_option]
+                        if selected_button.id == "start_game":
                             play()
-                        elif i == 1:
+                            last_save = Match.get_last_save()
+                        elif selected_button.id == "continue_game":
+                            continue_game()
+                            last_save = Match.get_last_save()
+                        elif selected_button.id == "instructions":
                             instructions()
-                        elif i == 2:  # Opción de Configuraciones
+                        elif (
+                            selected_button.id == "settings"
+                        ):  # Opción de Configuraciones
                             settings_screen()
-                        elif i == 3:  # Opción de Scores
+                        elif selected_button.id == "scores":
                             scoreboard_screen()
-                        elif i == 4:
+                        elif selected_button.id == "exit":
                             pygame.quit()
                             sys.exit()
 

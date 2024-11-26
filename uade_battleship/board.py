@@ -274,7 +274,7 @@ def board(match: Match):
     game_board = GameBoard(match, p_game_grid)
     cpu = CpuAi(match)  # Instanciamos la CPU
 
-    current_player = 0
+    current_player = match.get_current_player_index()
     waiting_for_turn_change = False
     last_move_time = 0
     winner = None

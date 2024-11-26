@@ -35,5 +35,6 @@ class PlayerData(TypedDict):
 
 class MatchData(TypedDict):
     type: Literal["singleplayer", "multiplayer_local"]
+    current_player: Literal["player_1", "player_2"]
     player_1: PlayerData
     player_2: PlayerData

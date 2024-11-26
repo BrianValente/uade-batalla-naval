@@ -31,14 +31,24 @@ class Match:
 
     board_size: int = BOARD_SIZE
 
+    autosave: bool = True
+
     def __init__(
         self, player_1_name: str = "Player 1", player_2_name: str = "Player 2"
     ):
         self.match_data = MatchData(
             type="singleplayer",
+            current_player="player_1",
             player_1=PlayerData(name=player_1_name, fleet=[], shots_received=[]),
             player_2=PlayerData(name=player_2_name, fleet=[], shots_received=[]),
         )
+
+    @staticmethod
+    def get_last_save() -> "Match | None":
+        data = FileStorage.read_file("match.json")
+        if data is None:
+            return None
+        return Match.from_json(data)
 
     def get_players(self) -> tuple[str, str]:
         return self.match_data["player_1"]["name"], self.match_data["player_2"]["name"]
@@ -80,6 +90,8 @@ class Match:
         # Add shot to player data
         target_player_data["shots_received"].append(coord)
 
+        value = ShotResult.MISS
+
         # Check if shot hit a ship
         for ship in target_player_data["fleet"]:
             ship_coords = self._get_ship_coords(ship)
@@ -87,10 +99,28 @@ class Match:
             if coord in ship_coords:
                 # Check if all ship coords have been hit
                 if all(c in target_player_data["shots_received"] for c in ship_coords):
-                    return ShotResult.SUNK
-                return ShotResult.HIT
+                    value = ShotResult.SUNK
+                else:
+                    value = ShotResult.HIT
+                break
 
-        return ShotResult.MISS
+        if value == ShotResult.MISS:
+            self.switch_current_player()
+
+        if self.autosave:
+            self.save()
+
+        return value
+
+    def switch_current_player(self):
+        self.match_data["current_player"] = (
+            "player_2"
+            if self.match_data["current_player"] == "player_1"
+            else "player_1"
+        )
+
+    def get_current_player_index(self) -> int:
+        return 0 if self.match_data["current_player"] == "player_1" else 1
 
     def shot_already_made(self, coord: Coord, player_shot: int) -> bool:
         target_player_data = (
@@ -183,6 +213,12 @@ class Match:
         match_data_json = self.get_json()
         FileStorage.write_file("match.json", match_data_json)
 
+    def delete_save(self):
+        """
+        Delete the match save file.
+        """
+        FileStorage.delete_file("match.json")
+
     @staticmethod
     def from_json(data: str) -> "Match":
         """
@@ -221,6 +257,8 @@ class Match:
         # Check if all player 1's ships are sunk
         player_0_ships = self.get_sunken_ships(0)
         if len(player_0_ships) == len(self.match_data["player_1"]["fleet"]):
+            if self.autosave:
+                self.delete_save()
             return {
                 "name": self.match_data["player_2"]["name"],
                 "number": 1,
@@ -230,6 +268,8 @@ class Match:
         # Check if all player 2's ships are sunk
         player_1_ships = self.get_sunken_ships(1)
         if len(player_1_ships) == len(self.match_data["player_2"]["fleet"]):
+            if self.autosave:
+                self.delete_save()
             return {
                 "name": self.match_data["player_1"]["name"],
                 "number": 0,

@@ -20,7 +20,9 @@ class Button:
             255,
         ),
         border_thickness: int = 2,
+        id: Optional[str] = None,
     ):
+        self.id: Optional[str] = id
         self.image: Surface = (
             image if image else pygame.Surface((1, 1), pygame.SRCALPHA)
         )
@@ -73,8 +75,12 @@ class Button:
         self.image.blit(self.text, (self.border_thickness, self.border_thickness))
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
 
-    def update(self, screen: Surface) -> None:
-        screen.blit(self.image, self.rect)
+    def update(
+        self, screen: Surface, position: Optional[Tuple[int, int]] = None
+    ) -> None:
+        rect = self.rect if position is None else self.image.get_rect(center=position)
+        self.rect = rect
+        screen.blit(self.image, rect)
 
     def checkForInput(self, position: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(position)
