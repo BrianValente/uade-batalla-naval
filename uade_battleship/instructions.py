@@ -5,10 +5,8 @@ from pygame.surface import Surface
 from pygame.rect import Rect
 from pygame.font import Font
 from .ui import Button
+from .utils import Color
 
-DARK_BLUE = (0, 0, 139)
-LIGHT_BLUE = (0, 191, 255)
-WHITE = (255, 255, 255)
 GAME_RULES: List[str] = [
     "1. Cada jugador tiene un tablero con una cuadrícula de filas y columnas. Los barcos se colocan",
     "   estratégicamente de forma horizontal o vertical (no en diagonal).",
@@ -32,17 +30,17 @@ def instructions() -> None:
     width, height = screen.get_size()
 
     while True:
-        screen.fill(DARK_BLUE)
+        screen.fill(Color.DARK_BLUE)
 
         # Title
-        rules_text: Surface = get_font(40).render("Instrucciones", True, WHITE)
+        rules_text: Surface = get_font(40).render("Instrucciones", True, Color.WHITE)
         rules_rect: Rect = rules_text.get_rect(center=(width // 2, 100))
         screen.blit(rules_text, rules_rect)
 
         # Show the rules (aligned to the left with a margin of 100px)
         margin_left = 100
         for i, rule in enumerate(GAME_RULES):
-            rule_text: Surface = get_font(12).render(rule, True, WHITE)
+            rule_text: Surface = get_font(12).render(rule, True, Color.WHITE)
             rule_rect: Rect = rule_text.get_rect(topleft=(margin_left, 200 + i * 40))
             screen.blit(rule_text, rule_rect)
 
@@ -52,9 +50,9 @@ def instructions() -> None:
             pos=(width // 2, height - 75),
             text_input="Volver al Menú",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
-            border_color=WHITE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
+            border_color=Color.WHITE,
         )
 
         back_button.update(screen)

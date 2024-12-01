@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Any
-from .FileStorage import FileStorage
+from .file_storage import FileStorage
 import json
 
 

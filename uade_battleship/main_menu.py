@@ -3,7 +3,7 @@ import math
 import random
 from typing import Literal
 
-from .utils import Settings, SettingsKey
+from .utils import Settings, SettingsKey, Color
 from .ui import Button
 from .match.match_data import ShipPosition
 from .board import board
@@ -12,11 +12,6 @@ from .match import Match, SHIP_SIZES
 from .ship_placement import ship_placement
 from .scoreboard_screen import scoreboard_screen
 from .settings import settings_screen
-
-DARK_BLUE = (0, 0, 139)
-LIGHT_BLUE = (0, 191, 255)
-WHITE = (255, 255, 255)
-TRANSLUCENT_BLACK = (0, 0, 0, 128)
 
 pygame.display.set_caption("Menu")
 
@@ -159,8 +154,8 @@ def main_menu():
             pos=(0, 0),
             text_input="Comenzar partida",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
         ),
         Button(
             id="instructions",
@@ -168,8 +163,8 @@ def main_menu():
             pos=(0, 0),
             text_input="Instrucciones de juego",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
         ),
         Button(
             id="settings",
@@ -177,8 +172,8 @@ def main_menu():
             pos=(0, 0),
             text_input="Configuraciones",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
         ),
         Button(
             id="scores",
@@ -186,8 +181,8 @@ def main_menu():
             pos=(0, 0),
             text_input="Scores",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
         ),
         Button(
             id="exit",
@@ -195,8 +190,8 @@ def main_menu():
             pos=(0, 0),
             text_input="Salir",
             font=get_font(30),
-            base_color=DARK_BLUE,
-            hovering_color=LIGHT_BLUE,
+            base_color=Color.DARK_BLUE,
+            hovering_color=Color.LIGHT_BLUE,
         ),
     ]
 
@@ -206,8 +201,8 @@ def main_menu():
         pos=(0, 0),
         text_input="Continuar partida",
         font=get_font(30),
-        base_color=DARK_BLUE,
-        hovering_color=LIGHT_BLUE,
+        base_color=Color.DARK_BLUE,
+        hovering_color=Color.LIGHT_BLUE,
     )
 
     while True:
@@ -221,7 +216,7 @@ def main_menu():
         background_scaled = pygame.transform.scale(BG, (1280, 720))
         screen.blit(background_scaled, (0, 0))
         overlay = pygame.Surface((1280, 720), pygame.SRCALPHA)
-        overlay.fill(TRANSLUCENT_BLACK)
+        overlay.fill(Color.TRANSLUCENT_BLACK)
         screen.blit(overlay, (0, 0))
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
@@ -232,7 +227,7 @@ def main_menu():
             animation_time
         )  # The scale factor oscillates between 1 and 1.1
         animated_font_size = int(60 * scale_factor)  # Adjust the font size
-        MENU_TEXT = get_font(animated_font_size).render("MENU", True, WHITE)
+        MENU_TEXT = get_font(animated_font_size).render("MENU", True, Color.WHITE)
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
         screen.blit(MENU_TEXT, MENU_RECT)
 

@@ -1,5 +1,6 @@
-from .FileStorage import FileStorage
-from .Settings import Settings, SettingsKey
+from .file_storage import FileStorage
+from .settings import Settings, SettingsKey
+from .colors import Color
 
 
 def Suma(a: int, b: int) -> int:

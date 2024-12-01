@@ -12,7 +12,8 @@ from uade_battleship.utils import Settings, SettingsKey
 from .match import Match, ShotResult
 from .ai.cpu_ai import CpuAi
 from .ui.options_menu import OptionsMenu
-from .scoreboard.Scoreboard import Scoreboard
+from .scoreboard import Scoreboard
+from .utils import Color
 
 
 class VideoClipProtocol(Protocol):
@@ -24,12 +25,6 @@ class VideoClipProtocol(Protocol):
 ROWS = 10
 COLS = 10
 CELLSIZE = 40
-# Colors
-WHITE = (255, 255, 255)
-GRAY = (100, 100, 100)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 
 # Volume Variables
 bar_width = 150
@@ -58,8 +53,8 @@ def show_menu_options(window: pygame.Surface, font: pygame.font.Font):
     yes_button_rect = pygame.Rect(40, 160, 50, 40)
     no_button_rect = pygame.Rect(120, 160, 50, 40)
 
-    pygame.draw.rect(window, (GREEN), yes_button_rect)
-    pygame.draw.rect(window, (RED), no_button_rect)
+    pygame.draw.rect(window, Color.GREEN, yes_button_rect)
+    pygame.draw.rect(window, Color.RED, no_button_rect)
 
     window.blit(question_text, question_pos)
     window.blit(yes_text, (yes_button_rect.x + 10, yes_button_rect.y + 5))
@@ -86,11 +81,11 @@ volume_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
 # Function to draw the volume bar
 def draw_volume_bar(window: pygame.Surface, volume: float):
     # Background of the bar (gray)
-    pygame.draw.rect(window, GRAY, volume_rect)
+    pygame.draw.rect(window, Color.GRAY, volume_rect)
 
     # Part of the bar that represents the volume (blue)
     filled_rect = pygame.Rect(bar_x, bar_y, int(volume * bar_width), bar_height)
-    pygame.draw.rect(window, BLUE, filled_rect)
+    pygame.draw.rect(window, Color.BLUE, filled_rect)
 
 
 # Variable to know if the mouse is pressing the bar
@@ -198,7 +193,7 @@ def draw_stats(
     window.blit(background, (player_stats_x - 10, stats_y - 10))
 
     for i, text in enumerate(stats_texts):
-        text_surface = font.render(text, True, WHITE)
+        text_surface = font.render(text, True, Color.WHITE)
         window.blit(text_surface, (player_stats_x, stats_y + i * 30))
 
     # Stats of the enemy (right side)
@@ -222,7 +217,7 @@ def draw_stats(
     window.blit(enemy_background, (enemy_stats_x - 10, stats_y - 10))
 
     for i, text in enumerate(enemy_stats_texts):
-        text_surface = font.render(text, True, WHITE)
+        text_surface = font.render(text, True, Color.WHITE)
         window.blit(text_surface, (enemy_stats_x, stats_y + i * 30))
 
 
@@ -386,7 +381,7 @@ def board(match: Match):
             else match.match_data["player_2"]["name"]
         )
         current_player_text = font.render(
-            f"Turno de {current_player_name}", True, WHITE
+            f"Turno de {current_player_name}", True, Color.WHITE
         )
         text_rect = current_player_text.get_rect()
         text_rect.centerx = game_surface.get_width() // 2
@@ -409,8 +404,9 @@ def board(match: Match):
         # If there is a winner, show message and count time
         if winner is not None:
             # Show victory message with black text
-            BLACK = (0, 0, 0)
-            winner_text = font.render(f"¡{winner['name']} ha ganado!", True, WHITE)
+            winner_text = font.render(
+                f"¡{winner['name']} ha ganado!", True, Color.WHITE
+            )
             text_rect = winner_text.get_rect()
             text_rect.centerx = game_surface.get_width() // 2
             text_rect.centery = game_surface.get_height() // 2

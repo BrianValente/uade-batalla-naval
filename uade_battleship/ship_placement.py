@@ -1,21 +1,18 @@
 import pygame
 import sys
 from typing import Any, Callable, Optional, Protocol, cast
-from .match import Match, ShipPosition, SHIP_SIZES
 from moviepy.editor import VideoFileClip
 import numpy as np
 import time
+
 from .ui.Button import Button
 from .ui.options_menu import OptionsMenu
 from .ui.TextInput import TextInput
+from .utils.colors import Color
+from .match import Match, ShipPosition, SHIP_SIZES
 
 CELLSIZE = 40
 GRID_SIZE = 10
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 
 
 class VideoClipProtocol(Protocol):
@@ -141,8 +138,8 @@ def ship_placement(match: Match) -> bool:
         pos=(screen_width // 2, grid_y - 50),  # 50px above the grid
         font=font,
         text="Player",
-        base_color=WHITE,
-        selected_color=GREEN,
+        base_color=Color.WHITE,
+        selected_color=Color.GREEN,
     )
 
     # Create continue button
@@ -199,7 +196,7 @@ def ship_placement(match: Match) -> bool:
             for col in range(GRID_SIZE):
                 pygame.draw.rect(
                     screen,
-                    WHITE,
+                    Color.WHITE,
                     (
                         grid_x + col * CELLSIZE,
                         grid_y + row * CELLSIZE,
