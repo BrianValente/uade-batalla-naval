@@ -2,13 +2,7 @@ import pygame
 import sys
 from typing import Tuple
 from .ui import Button
-from .utils import Settings, SettingsKey
-
-DARK_BLUE = (0, 0, 139)
-LIGHT_BLUE = (0, 191, 255)
-WHITE = (255, 255, 255)
-GRAY = (100, 100, 100)
-BLUE = (0, 0, 255)
+from .utils import Settings, SettingsKey, Color
 
 
 def get_font(size: int) -> pygame.font.Font:
@@ -22,14 +16,14 @@ class VolumeSlider:
 
     def draw(self, surface: pygame.Surface):
         # Draw base bar
-        pygame.draw.rect(surface, GRAY, self.rect)
+        pygame.draw.rect(surface, Color.GRAY, self.rect)
 
         # Draw volume bar
         filled_width = int(Settings.get(SettingsKey.VOLUME) * self.rect.width)
         filled_rect = pygame.Rect(
             self.rect.x, self.rect.y, filled_width, self.rect.height
         )
-        pygame.draw.rect(surface, BLUE, filled_rect)
+        pygame.draw.rect(surface, Color.BLUE, filled_rect)
 
     def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -69,20 +63,20 @@ def settings_screen() -> None:
         pos=(640, 650),
         text_input="Volver al Menú",
         font=get_font(30),
-        base_color=DARK_BLUE,
-        hovering_color=LIGHT_BLUE,
+        base_color=Color.DARK_BLUE,
+        hovering_color=Color.LIGHT_BLUE,
     )
 
     while True:
-        screen.fill(DARK_BLUE)
+        screen.fill(Color.DARK_BLUE)
 
         # Title
-        title_text = get_font(50).render("CONFIGURACIÓN", True, WHITE)
+        title_text = get_font(50).render("CONFIGURACIÓN", True, Color.WHITE)
         title_rect = title_text.get_rect(center=(640, 100))
         screen.blit(title_text, title_rect)
 
         # Volume text
-        volume_text = get_font(30).render("Volumen", True, WHITE)
+        volume_text = get_font(30).render("Volumen", True, Color.WHITE)
         volume_text_rect = volume_text.get_rect(center=(screen.get_width() // 2, 250))
         screen.blit(volume_text, volume_text_rect)
 
@@ -94,7 +88,7 @@ def settings_screen() -> None:
 
         # Show percentage
         percentage = int(Settings.get(SettingsKey.VOLUME) * 100)
-        percentage_text = get_font(25).render(f"{percentage}%", True, WHITE)
+        percentage_text = get_font(25).render(f"{percentage}%", True, Color.WHITE)
         percentage_rect = percentage_text.get_rect(
             midleft=(volume_slider.rect.right + 20, volume_slider.rect.centery)
         )

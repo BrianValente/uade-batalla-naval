@@ -3,13 +3,7 @@ import sys
 from typing import List
 from .ui import Button
 from .scoreboard import Scoreboard, Score
-
-DARK_BLUE = (0, 0, 139)
-LIGHT_BLUE = (0, 191, 255)
-WHITE = (255, 255, 255)
-GOLD = (255, 215, 0)
-SILVER = (192, 192, 192)
-BRONZE = (205, 127, 50)
+from .utils import Color
 
 
 def get_font(size: int) -> pygame.font.Font:
@@ -29,28 +23,28 @@ def scoreboard_screen() -> None:
         pos=(640, 650),
         text_input="Volver al Menú",
         font=get_font(30),
-        base_color=DARK_BLUE,
-        hovering_color=LIGHT_BLUE,
+        base_color=Color.DARK_BLUE,
+        hovering_color=Color.LIGHT_BLUE,
     )
 
     while True:
-        screen.fill(DARK_BLUE)
+        screen.fill(Color.DARK_BLUE)
 
         # Title
-        title_text = get_font(50).render("Mejores Puntajes", True, WHITE)
+        title_text = get_font(50).render("Mejores Puntajes", True, Color.WHITE)
         title_rect = title_text.get_rect(center=(640, 100))
         screen.blit(title_text, title_rect)
 
         if not scores:
             # Message when there are no scores
             no_scores_text = get_font(30).render(
-                "¡Todavía no hay puntajes!", True, WHITE
+                "¡Todavía no hay puntajes!", True, Color.WHITE
             )
             no_scores_rect = no_scores_text.get_rect(center=(640, 300))
             screen.blit(no_scores_text, no_scores_rect)
 
             play_text = get_font(25).render(
-                "Jugá una partida para aparecer acá", True, LIGHT_BLUE
+                "Jugá una partida para aparecer acá", True, Color.LIGHT_BLUE
             )
             play_rect = play_text.get_rect(center=(640, 350))
             screen.blit(play_text, play_rect)
@@ -61,13 +55,13 @@ def scoreboard_screen() -> None:
             for i, score in enumerate(scores[:10]):  # Show only top 10
                 # Color according to position
                 if i == 0:
-                    color = GOLD
+                    color = Color.GOLD
                 elif i == 1:
-                    color = SILVER
+                    color = Color.SILVER
                 elif i == 2:
-                    color = BRONZE
+                    color = Color.BRONZE
                 else:
-                    color = WHITE
+                    color = Color.WHITE
 
                 # Score text
                 score_text = get_font(25).render(

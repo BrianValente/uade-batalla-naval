@@ -4,11 +4,8 @@ from typing import Optional, Union, Tuple
 from pygame.surface import Surface
 from pygame.rect import Rect
 from pygame.font import Font
-from uade_battleship.main_menu import main_menu
-
-DARK_BLUE = (0, 0, 139)
-LIGHT_BLUE = (0, 191, 255)
-WHITE = (255, 255, 255)
+from .main_menu import main_menu
+from .utils import Color
 
 
 def get_font(size: int) -> Font:
@@ -31,7 +28,7 @@ def portada() -> None:
 
     while True:
         screen: Surface = pygame.display.get_surface()
-        screen.fill(DARK_BLUE)
+        screen.fill(Color.DARK_BLUE)
 
         MENU_MOUSE_POS: Tuple[int, int] = pygame.mouse.get_pos()
 
@@ -44,11 +41,11 @@ def portada() -> None:
             if title_size <= max_title_size - 5:
                 bouncing = False
 
-        MENU_TEXT: Surface = get_font(int(title_size)).render("UADE", True, WHITE)
+        MENU_TEXT: Surface = get_font(int(title_size)).render("UADE", True, Color.WHITE)
         MENU_RECT: Rect = MENU_TEXT.get_rect(center=(640, 100))
 
         SUBTEXT: Surface = get_font(30).render(
-            "Battleship: Survival of the greatest", True, WHITE
+            "Battleship: Survival of the greatest", True, Color.WHITE
         )
         SUBTEXT_RECT: Rect = SUBTEXT.get_rect(center=(640, 200))
 
@@ -57,10 +54,10 @@ def portada() -> None:
             pos=(640, 400),
             text_input="Are you ready? Click here to start the battle!",
             font=get_font(25),
-            base_color=WHITE,
+            base_color=Color.WHITE,
             hovering_color=(200, 200, 200),
-            bg_color=LIGHT_BLUE,
-            border_color=LIGHT_BLUE,
+            bg_color=Color.LIGHT_BLUE,
+            border_color=Color.LIGHT_BLUE,
         )
 
         screen.blit(MENU_TEXT, MENU_RECT)
