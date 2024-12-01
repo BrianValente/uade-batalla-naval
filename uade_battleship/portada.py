@@ -6,10 +6,9 @@ from pygame.rect import Rect
 from pygame.font import Font
 from uade_battleship.main_menu import main_menu
 
-# Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
-WHITE = (255, 255, 255)  # Blanco para el texto
+DARK_BLUE = (0, 0, 139)
+LIGHT_BLUE = (0, 191, 255)
+WHITE = (255, 255, 255)
 
 
 def get_font(size: int) -> Font:
@@ -21,12 +20,12 @@ def play() -> None:
 
 
 def portada() -> None:
-    # Tamaño inicial del texto para el efecto "pop-up"
-    title_size: float = 10  # Empieza pequeño
-    max_title_size: int = 70  # Tamaño final del texto "UADE"
-    growth_rate: float = 0.5  # Velocidad de crecimiento más lenta
-    bouncing: bool = False  # Para controlar el efecto de rebote
-    bounce_back_rate: float = 0.2  # Velocidad de retroceso en el rebote
+    # Initial size of the text for the "pop-up" effect
+    title_size: float = 10  # Starts small
+    max_title_size: int = 70  # Final size of the "UADE" text
+    growth_rate: float = 0.5  # Slower growth rate
+    bouncing: bool = False  # To control the bouncing effect
+    bounce_back_rate: float = 0.2  # Bounce back rate
 
     clock: pygame.time.Clock = pygame.time.Clock()
 

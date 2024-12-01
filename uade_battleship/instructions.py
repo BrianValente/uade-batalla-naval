@@ -34,19 +34,19 @@ def instructions() -> None:
     while True:
         screen.fill(DARK_BLUE)
 
-        # Título
-        reglas_text: Surface = get_font(40).render("REGLAS DEL JUEGO", True, WHITE)
-        reglas_rect: Rect = reglas_text.get_rect(center=(width // 2, 100))
-        screen.blit(reglas_text, reglas_rect)
+        # Title
+        rules_text: Surface = get_font(40).render("Instrucciones", True, WHITE)
+        rules_rect: Rect = rules_text.get_rect(center=(width // 2, 100))
+        screen.blit(rules_text, rules_rect)
 
-        # Mostrar las reglas (alineadas a la izquierda con margen de 100px)
+        # Show the rules (aligned to the left with a margin of 100px)
         margin_left = 100
         for i, rule in enumerate(GAME_RULES):
             rule_text: Surface = get_font(12).render(rule, True, WHITE)
             rule_rect: Rect = rule_text.get_rect(topleft=(margin_left, 200 + i * 40))
             screen.blit(rule_text, rule_rect)
 
-        # Botón de volver
+        # Back button
         back_button: Button = Button(
             image=None,
             pos=(width // 2, height - 75),

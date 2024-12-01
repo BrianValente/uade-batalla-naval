@@ -4,13 +4,12 @@ from typing import List
 from .ui import Button
 from .scoreboard import Scoreboard, Score
 
-# Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para hover
-WHITE = (255, 255, 255)  # Blanco para texto
-GOLD = (255, 215, 0)  # Color para el primer puesto
-SILVER = (192, 192, 192)  # Color para el segundo puesto
-BRONZE = (205, 127, 50)  # Color para el tercer puesto
+DARK_BLUE = (0, 0, 139)
+LIGHT_BLUE = (0, 191, 255)
+WHITE = (255, 255, 255)
+GOLD = (255, 215, 0)
+SILVER = (192, 192, 192)
+BRONZE = (205, 127, 50)
 
 
 def get_font(size: int) -> pygame.font.Font:
@@ -21,10 +20,10 @@ def scoreboard_screen() -> None:
     screen = pygame.display.get_surface()
     clock = pygame.time.Clock()
 
-    # Obtener scores
+    # Get scores
     scores: List[Score] = Scoreboard.get_scoreboard()
 
-    # Crear botón de volver
+    # Create back button
     back_button = Button(
         image=None,
         pos=(640, 650),
@@ -37,13 +36,13 @@ def scoreboard_screen() -> None:
     while True:
         screen.fill(DARK_BLUE)
 
-        # Título
-        title_text = get_font(50).render("MEJORES PUNTAJES", True, WHITE)
+        # Title
+        title_text = get_font(50).render("Mejores Puntajes", True, WHITE)
         title_rect = title_text.get_rect(center=(640, 100))
         screen.blit(title_text, title_rect)
 
         if not scores:
-            # Mensaje cuando no hay scores
+            # Message when there are no scores
             no_scores_text = get_font(30).render(
                 "¡Todavía no hay puntajes!", True, WHITE
             )
@@ -56,11 +55,11 @@ def scoreboard_screen() -> None:
             play_rect = play_text.get_rect(center=(640, 350))
             screen.blit(play_text, play_rect)
         else:
-            # Ordenar scores por puntaje
+            # Sort scores by score
             scores.sort(key=lambda x: x["score"])
-            # Mostrar los scores
-            for i, score in enumerate(scores[:10]):  # Mostrar solo top 10
-                # Color según posición
+            # Show scores
+            for i, score in enumerate(scores[:10]):  # Show only top 10
+                # Color according to position
                 if i == 0:
                     color = GOLD
                 elif i == 1:
@@ -70,19 +69,19 @@ def scoreboard_screen() -> None:
                 else:
                     color = WHITE
 
-                # Texto del score
+                # Score text
                 score_text = get_font(25).render(
                     f"#{i+1}. {score['name']} - {score['score']} puntos", True, color
                 )
                 score_rect = score_text.get_rect(center=(640, 200 + i * 45))
                 screen.blit(score_text, score_rect)
 
-        # Actualizar botón de volver
+        # Update back button
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         back_button.changeColor(MENU_MOUSE_POS)
         back_button.update(screen)
 
-        # Eventos
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

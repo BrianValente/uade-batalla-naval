@@ -9,7 +9,6 @@ from .ui.Button import Button
 from .ui.options_menu import OptionsMenu
 from .ui.TextInput import TextInput
 
-# Constantes
 CELLSIZE = 40
 GRID_SIZE = 10
 WHITE = (255, 255, 255)
@@ -40,11 +39,11 @@ class DraggableShip:
         )
 
     def reset_to_last_position(self):
-        """Vuelve a la última posición válida"""
+        """Go back to the last valid position"""
         self.ship_position = self.last_valid_position.copy()
 
     def start_drag(self):
-        """Guarda la posición actual antes de empezar a arrastrar"""
+        """Save the current position before starting to drag"""
         self.last_valid_position = self.ship_position.copy()
         self.dragging = True
 
@@ -52,13 +51,13 @@ class DraggableShip:
         if self.ship_position["orientation"] == "horizontal":
             width = self.ship_position["size"] * CELLSIZE
             height = CELLSIZE
-            # Escalamos la imagen horizontalmente
+            # Scale the image horizontally
             rotated = pygame.transform.rotate(self.ship_image, 90)
             scaled_image = pygame.transform.scale(rotated, (width, height))
         else:
             width = CELLSIZE
             height = self.ship_position["size"] * CELLSIZE
-            # Rotamos 90 grados y escalamos para orientación vertical
+            # Rotate 90 degrees and scale for vertical orientation
             scaled_image = pygame.transform.scale(self.ship_image, (width, height))
 
         position = self.get_position(grid_pos)
@@ -109,13 +108,13 @@ class DraggableShip:
             else "horizontal"
         )
 
-        # Ajustamos la posición si se sale de la grilla
+        # Adjust position if it goes out of the grid
         if self.ship_position["orientation"] == "horizontal":
-            # Si al rotar a horizontal se sale por la derecha
+            # If rotating to horizontal goes out on the right
             if self.ship_position["x"] + self.ship_position["size"] > GRID_SIZE:
                 self.ship_position["x"] = GRID_SIZE - self.ship_position["size"]
         else:  # vertical
-            # Si al rotar a vertical se sale por abajo
+            # If rotating to vertical goes out on the bottom
             if self.ship_position["y"] + self.ship_position["size"] > GRID_SIZE:
                 self.ship_position["y"] = GRID_SIZE - self.ship_position["size"]
 
@@ -124,11 +123,11 @@ def ship_placement(match: Match) -> bool:
     screen = pygame.display.get_surface()
     clock = pygame.time.Clock()
 
-    # Inicializar video de fondo
+    # Initialize background video
     video_clip = cast(VideoClipProtocol, VideoFileClip("assets/background.mp4"))
     start_time = time.time()
 
-    # Calcular posición de la grilla
+    # Calculate grid position
     screen_width, screen_height = screen.get_size()
     grid_width = GRID_SIZE * CELLSIZE
     grid_height = GRID_SIZE * CELLSIZE
@@ -152,14 +151,14 @@ def ship_placement(match: Match) -> bool:
         pos=(
             screen_width // 2,
             grid_y + grid_height + 50,
-        ),  # Movemos el botón 50px debajo de la grilla
+        ),  # Move the button 50px below the grid
         text_input="¡COMENZAR!",
         font=font,
         base_color=(0, 255, 0),
         hovering_color=(0, 200, 0),
     )
 
-    # Crear barcos arrastrables con posiciones random
+    # Create draggable ships with random positions
     ships: list[DraggableShip] = []
 
     for i, size in enumerate(SHIP_SIZES):
@@ -182,7 +181,7 @@ def ship_placement(match: Match) -> bool:
     while True:
         current_time = time.time()
 
-        # Reproducir video de fondo
+        # Play background video
         video_time = current_time - start_time
         if video_time >= video_clip.duration:
             start_time = time.time()
@@ -195,7 +194,7 @@ def ship_placement(match: Match) -> bool:
         )
         screen.blit(frame_surface, (0, 0))
 
-        # Dibujar grilla
+        # Draw grid
         for row in range(GRID_SIZE):
             for col in range(GRID_SIZE):
                 pygame.draw.rect(
@@ -210,11 +209,11 @@ def ship_placement(match: Match) -> bool:
                     1,
                 )
 
-        # Verificar si todos los barcos están colocados de forma válida
-        # No debe haber overlap entre barcos.
+        # Check if all ships are placed in a valid way
+        # There should be no overlap between ships.
         all_valid = True
         for i, ship in enumerate(ships):
-            # Obtener todas las coordenadas que ocupa el primer barco
+            # Get all coordinates occupied by the first ship
             ship_coords: set[tuple[int, int]] = set()
             if ship.ship_position["orientation"] == "horizontal":
                 for x in range(
@@ -230,11 +229,11 @@ def ship_placement(match: Match) -> bool:
                     ship_coords.add((ship.ship_position["x"], y))
 
             for j, other_ship in enumerate(ships):
-                # Saltamos si es el mismo barco
+                # Skip if it's the same ship
                 if i == j:
                     continue
 
-                # Obtener todas las coordenadas que ocupa el otro barco
+                # Get all coordinates occupied by the other ship
                 other_ship_coords: set[tuple[int, int]] = set()
                 if other_ship.ship_position["orientation"] == "horizontal":
                     for x in range(
@@ -251,7 +250,7 @@ def ship_placement(match: Match) -> bool:
                     ):
                         other_ship_coords.add((other_ship.ship_position["x"], y))
 
-                # Si hay intersección entre los conjuntos, hay overlap
+                # If there is an intersection between the sets, there is overlap
                 if ship_coords & other_ship_coords:
                     all_valid = False
                     break
@@ -261,14 +260,14 @@ def ship_placement(match: Match) -> bool:
             continue_button.changeColor(mouse_pos)
             continue_button.update(screen)
 
-        # Manejar eventos
+        # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Click izquierdo
+                if event.button == 1:  # Left click
                     if all_valid and continue_button.checkForInput(event.pos):
                         # Update player name before adding ships
                         match.match_data["player_1"][
@@ -281,7 +280,7 @@ def ship_placement(match: Match) -> bool:
 
                     current_time = pygame.time.get_ticks()
 
-                    # Invertimos el orden ya que los últimos barcos son los de z-index mayor
+                    # Reverse order since the last ships have the highest z-index
                     for ship in reversed(ships):
                         if ship.handle_click(event.pos, (grid_x, grid_y)):
                             if (
@@ -300,10 +299,10 @@ def ship_placement(match: Match) -> bool:
                             ship.last_click_time = current_time
                             break
 
-            # Agregar el evento de teclado acá
+            # Add keyboard event here
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and all_valid:
-                    # Agregar todos los barcos a la partida
+                    # Add all ships to the match
                     for ship in ships:
                         match.add_ship(0, ship.ship_position)
                     return True
@@ -311,14 +310,14 @@ def ship_placement(match: Match) -> bool:
             elif event.type == pygame.MOUSEBUTTONUP:
                 if selected_ship:
                     try:
-                        # Calcular la posición del mouse relativa a la grilla
+                        # Calculate mouse position relative to the grid
                         screen_pos_x, screen_pos_y = selected_ship.get_position(
                             (grid_x, grid_y)
                         )
                         grid_pos_x = round((screen_pos_x - grid_x) / CELLSIZE)
                         grid_pos_y = round((screen_pos_y - grid_y) / CELLSIZE)
 
-                        # Asegurarnos que el barco no se salga de la grilla
+                        # Ensure the ship doesn't go out of the grid
                         if selected_ship.ship_position["orientation"] == "horizontal":
                             max_x = GRID_SIZE - selected_ship.ship_position["size"]
                             grid_pos_x = max(0, min(grid_pos_x, max_x))
@@ -337,13 +336,13 @@ def ship_placement(match: Match) -> bool:
                             "orientation": selected_ship.ship_position["orientation"],
                         }
 
-                        # Intentar mover el barco a la nueva posición
+                        # Try to move the ship to the new position
                         selected_ship.ship_position = new_ship_position
                         selected_ship.last_valid_position = new_ship_position.copy()
                     except:
                         pass
                     finally:
-                        # Reset del drag
+                        # Reset the drag
                         selected_ship.dragging = False
                         selected_ship.initial_mouse_x = 0
                         selected_ship.initial_mouse_y = 0

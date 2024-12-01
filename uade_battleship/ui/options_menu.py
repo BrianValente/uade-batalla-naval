@@ -1,14 +1,12 @@
 import pygame
 from ..utils import Settings, SettingsKey
 
-# Colores
 WHITE = (255, 255, 255)
 GRAY = (100, 100, 100)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# Variables del volumen
 bar_width = 150
 bar_height = 20
 bar_x = 80

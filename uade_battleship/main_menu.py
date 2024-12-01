@@ -13,11 +13,10 @@ from .ship_placement import ship_placement
 from .scoreboard_screen import scoreboard_screen
 from .settings import settings_screen
 
-# Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo de la pantalla
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para el botón y su borde
-WHITE = (255, 255, 255)  # Blanco para el texto
-TRANSLUCENT_BLACK = (0, 0, 0, 128)  # Negro translúcido para superponer sobre el fondo
+DARK_BLUE = (0, 0, 139)
+LIGHT_BLUE = (0, 191, 255)
+WHITE = (255, 255, 255)
+TRANSLUCENT_BLACK = (0, 0, 0, 128)
 
 pygame.display.set_caption("Menu")
 
@@ -34,15 +33,14 @@ def play():
     def generate_random_ship_position(
         size: int, cpu_ships: list[ShipPosition]
     ) -> ShipPosition:
-        # Lista para guardar todas las posiciones válidas
+        # List to save all valid positions
         valid_positions: list[ShipPosition] = []
 
-        # Chequeamos cada celda del tablero
+        # Check each cell of the board
         for y in range(10):
             for x in range(10):
-                # Probamos orientación horizontal
-                if x + size <= 10:  # Si el barco entra horizontalmente
-                    # Creamos el ship para testear
+                # Try horizontal orientation
+                if x + size <= 10:  # If the ship fits horizontally
                     ship_horizontal: ShipPosition = {
                         "x": x,
                         "y": y,
@@ -50,13 +48,13 @@ def play():
                         "orientation": "horizontal",
                     }
 
-                    # Conseguimos coordenadas del barco horizontal
+                    # Get horizontal ship coordinates
                     horizontal_coords = set((x + dx, y) for dx in range(size))
 
-                    # Asumimos que es válida hasta que se demuestre lo contrario
+                    # Assume it's valid until proven otherwise
                     valid_horizontal = True
 
-                    # Chequeamos overlap con cada barco existente
+                    # Check overlap with each existing ship
                     for existing_ship in cpu_ships:
                         existing_coords: set[tuple[int, int]] = set()
                         if existing_ship["orientation"] == "horizontal":
@@ -77,8 +75,8 @@ def play():
                     if valid_horizontal:
                         valid_positions.append(ship_horizontal)
 
-                # Probamos orientación vertical
-                if y + size <= 10:  # Si el barco entra verticalmente
+                # Try vertical orientation
+                if y + size <= 10:  # If the ship fits vertically
                     ship_vertical: ShipPosition = {
                         "x": x,
                         "y": y,
@@ -86,13 +84,13 @@ def play():
                         "orientation": "vertical",
                     }
 
-                    # Conseguimos coordenadas del barco vertical
+                    # Get vertical ship coordinates
                     vertical_coords = set((x, y + dy) for dy in range(size))
 
-                    # Asumimos que es válida hasta que se demuestre lo contrario
+                    # Assume it's valid until proven otherwise
                     valid_vertical = True
 
-                    # Chequeamos overlap con cada barco existente
+                    # Check overlap with each existing ship
                     for existing_ship in cpu_ships:
                         existing_coords = set()
                         if existing_ship["orientation"] == "horizontal":
@@ -113,16 +111,16 @@ def play():
                     if valid_vertical:
                         valid_positions.append(ship_vertical)
 
-        # Si no hay posiciones válidas, lanzamos error
+        # If there are no valid positions, raise an error
         if not valid_positions:
-            raise ValueError("No se encontraron posiciones válidas para el barco")
+            raise ValueError("No valid positions found for the ship")
 
-        # Devolvemos una posición random de las válidas
+        # Return a random valid position
         return random.choice(valid_positions)
 
     match = Match("Player", "CPU")
 
-    # Primero vamos a la pantalla de posicionamiento
+    # First go to the ship placement screen
     if not ship_placement(match):
         return
 
@@ -133,7 +131,7 @@ def play():
 
     match.save()
 
-    # Luego vamos a la pantalla de juego
+    # Then go to the game screen
     board(match)
 
 
@@ -146,14 +144,14 @@ def continue_game():
 
 def main_menu():
     clock = pygame.time.Clock()
-    animation_time = 0  # Variable para controlar el tiempo de animación
-    selected_option = 0  # Índice de la opción seleccionada
-    mouse_used = False  # Bandera para detectar si el mouse fue usado
+    animation_time = 0  # Variable to control the animation time
+    selected_option = 0  # Index of the selected option
+    mouse_used = False  # Flag to detect if the mouse was used
 
     last_save = Match.get_last_save()
 
-    # Definimos la lista de botones
-    # Mostramos el botón de continuar partida si hay una partida guardada
+    # Define the list of buttons
+    # Show the continue game button if there is a saved game
     initial_buttons = [
         Button(
             id="start_game",
@@ -219,7 +217,7 @@ def main_menu():
         if last_save:
             buttons.insert(0, last_save_button)
 
-        # Dibuja la imagen de fondo y aplica la capa negra translúcida
+        # Draw the background image and apply the translucent black overlay
         background_scaled = pygame.transform.scale(BG, (1280, 720))
         screen.blit(background_scaled, (0, 0))
         overlay = pygame.Surface((1280, 720), pygame.SRCALPHA)
@@ -228,26 +226,24 @@ def main_menu():
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        # Control de la animación: usamos math.sin() para oscilar el tamaño
-        animation_time += (
-            clock.get_time() / 500
-        )  # Dividimos para controlar la velocidad
+        # Animation control: use math.sin() to oscillate the size
+        animation_time += clock.get_time() / 500  # Divide to control the speed
         scale_factor = 1 + 0.1 * math.sin(
             animation_time
-        )  # El factor de escala oscila entre 1 y 1.1
-        animated_font_size = int(60 * scale_factor)  # Ajustamos el tamaño de la fuente
+        )  # The scale factor oscillates between 1 and 1.1
+        animated_font_size = int(60 * scale_factor)  # Adjust the font size
         MENU_TEXT = get_font(animated_font_size).render("MENU", True, WHITE)
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
         screen.blit(MENU_TEXT, MENU_RECT)
 
-        # Actualizar colores y posición de botones
+        # Update button colors and position
         for i, button in enumerate(buttons):
             button.changeColor(MENU_MOUSE_POS)
             button.update(
                 screen, position=(640, 220 + (i + (0 if last_save else 1)) * 80)
             )
 
-        # Mover entre opciones con teclas y mouse
+        # Move between options with keyboard and mouse
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -255,10 +251,10 @@ def main_menu():
             if event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_DOWN, pygame.K_s]:
                     selected_option = (selected_option + 1) % len(buttons)
-                    mouse_used = False  # Reseteamos el uso del mouse
+                    mouse_used = False  # Reset the mouse usage
                 if event.key in [pygame.K_UP, pygame.K_w]:
                     selected_option = (selected_option - 1) % len(buttons)
-                    mouse_used = False  # Reseteamos el uso del mouse
+                    mouse_used = False  # Reset the mouse usage
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     selected_button = buttons[selected_option]
                     if selected_button.id == "start_game":
@@ -269,7 +265,7 @@ def main_menu():
                         last_save = Match.get_last_save()
                     elif selected_button.id == "instructions":
                         instructions()
-                    elif selected_button.id == "settings":  # Opción de Configuraciones
+                    elif selected_button.id == "settings":
                         settings_screen()
                     elif selected_button.id == "scores":
                         scoreboard_screen()
@@ -278,7 +274,7 @@ def main_menu():
                         sys.exit()
 
             if event.type == pygame.MOUSEMOTION:
-                mouse_used = True  # Si se mueve el mouse, lo usamos para resaltar
+                mouse_used = True  # If the mouse moves, use it to highlight
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i, button in enumerate(buttons):
                     if button.checkForInput(MENU_MOUSE_POS):
@@ -292,9 +288,7 @@ def main_menu():
                             last_save = Match.get_last_save()
                         elif selected_button.id == "instructions":
                             instructions()
-                        elif (
-                            selected_button.id == "settings"
-                        ):  # Opción de Configuraciones
+                        elif selected_button.id == "settings":
                             settings_screen()
                         elif selected_button.id == "scores":
                             scoreboard_screen()
@@ -302,7 +296,7 @@ def main_menu():
                             pygame.quit()
                             sys.exit()
 
-        # Resaltar la opción seleccionada con el teclado
+        # Highlight the selected option with the keyboard
         if not mouse_used:
             for i, button in enumerate(buttons):
                 if i == selected_option:
@@ -316,13 +310,13 @@ def main_menu():
                 button.update(screen)
 
         pygame.display.update()
-        clock.tick(60)  # Mantenemos una velocidad de 60 FPS
+        clock.tick(60)  # Keep 60 FPS
 
 
-# Cargar música de fondo
+# Load background music
 pygame.mixer.init()
 pygame.mixer.music.load("assets/background_music_menu.mp3")
 
-# Reproducir música de fondo
-pygame.mixer.music.play(-1)  # Reproducir en bucle
-pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME) * 0.5)  # volumen al 50%
+# Play background music
+pygame.mixer.music.play(-1)  # Play in loop
+pygame.mixer.music.set_volume(Settings.get(SettingsKey.VOLUME) * 0.5)  # 50% volume
