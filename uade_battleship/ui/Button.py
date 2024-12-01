@@ -42,12 +42,12 @@ class Button:
         self,
         color: Optional[Union[Tuple[int, int, int], Tuple[int, int, int, int]]] = None,
     ) -> None:
-        # Renderiza el texto con un contorno blanco
+        # Render the text with a white border
         color = color or self.base_color
         self.text = self.font.render(self.text_input, True, color)
         text_width, text_height = self.text.get_size()
 
-        # Crear el fondo del texto para que sea transparente y añadir contorno
+        # Create the text background to be transparent and add a border
         self.image = pygame.Surface(
             (
                 text_width + 2 * self.border_thickness,
@@ -56,7 +56,7 @@ class Button:
             pygame.SRCALPHA,
         )
 
-        # Dibujar el contorno
+        # Draw the border
         for offset_x in range(-self.border_thickness, self.border_thickness + 1):
             for offset_y in range(-self.border_thickness, self.border_thickness + 1):
                 if offset_x != 0 or offset_y != 0:
@@ -71,7 +71,7 @@ class Button:
                         ),
                     )
 
-        # Dibujar el texto principal en el centro
+        # Draw the main text in the center
         self.image.blit(self.text, (self.border_thickness, self.border_thickness))
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
 

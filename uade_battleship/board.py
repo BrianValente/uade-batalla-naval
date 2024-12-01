@@ -20,22 +20,22 @@ class VideoClipProtocol(Protocol):
     get_frame: Callable[[float], Any]
 
 
-# Configuración inicial
+# Initial Configuration
 ROWS = 10
 COLS = 10
 CELLSIZE = 40
-# Colores
+# Colors
 WHITE = (255, 255, 255)
 GRAY = (100, 100, 100)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-# Variables del volumen
+# Volume Variables
 bar_width = 150
 bar_height = 20
-bar_x = 80  # Coordenada x de la barra
-bar_y = 285  # Coordenada y debajo de los botones
+bar_x = 80  # x coordinate of the bar
+bar_y = 285  # y coordinate below the buttons
 
 menu_button_rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
 
@@ -43,12 +43,12 @@ menu_button_rect: pygame.Rect = pygame.Rect(0, 0, 0, 0)
 def draw_menu_button(window: pygame.Surface, gear_img: pygame.Surface):
     global menu_button_rect
 
-    # area del icono de configuración
+    # configuration icon area
     menu_button_rect = gear_img.get_rect(topleft=(20, 20))
     window.blit(gear_img, menu_button_rect.topleft)
 
 
-# Muestra las opciones "¿Volver al menú?" con "Sí" y "No"
+# Show the options "Return to menu?" with "Yes" and "No"
 def show_menu_options(window: pygame.Surface, font: pygame.font.Font):
     question_text = font.render("¿Volver al menú?", True, (255, 255, 255))
     yes_text = font.render("Sí", True, (0, 150, 0))
@@ -79,42 +79,42 @@ def show_volume_text(window: pygame.Surface, font: pygame.font.Font):
     return volume_text
 
 
-# Rectángulo que representa la barra de volumen
+# Rectangle representing the volume bar
 volume_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
 
 
-# Función para dibujar la barra de volumen
+# Function to draw the volume bar
 def draw_volume_bar(window: pygame.Surface, volume: float):
-    # Fondo de la barra (gris)
+    # Background of the bar (gray)
     pygame.draw.rect(window, GRAY, volume_rect)
 
-    # Parte de la barra que representa el volumen (azul)
+    # Part of the bar that represents the volume (blue)
     filled_rect = pygame.Rect(bar_x, bar_y, int(volume * bar_width), bar_height)
     pygame.draw.rect(window, BLUE, filled_rect)
 
 
-# Variable para saber si el mouse está presionando la barra
+# Variable to know if the mouse is pressing the bar
 adjusting_volume = False
 
 
-# Función para ajustar el volumen al hacer clic y arrastrar
+# Function to adjust the volume when clicking and dragging
 def adjust_volume(mouse_x: int, mouse_y: int):
     global volume, adjusting_volume
     mouse_buttons = pygame.mouse.get_pressed()
 
-    # Verificar si el mouse está dentro de los límites de la barra de volumen
-    if mouse_buttons[0]:  # Si el botón izquierdo del mouse está presionado
+    # Check if the mouse is within the volume bar limits
+    if mouse_buttons[0]:  # If the left mouse button is pressed
         if volume_rect.collidepoint(mouse_x, mouse_y) or adjusting_volume:
             adjusting_volume = True
             volume = (mouse_x - bar_x) / bar_width
-            volume = max(0, min(volume, 1))  # Limitar entre 0 y 1
-            pygame.mixer.music.set_volume(volume)  # Ajustar el volumen de la música
+            volume = max(0, min(volume, 1))  # Limit between 0 and 1
+            pygame.mixer.music.set_volume(volume)  # Adjust the music volume
             Settings.set(SettingsKey.VOLUME, volume)
     else:
-        adjusting_volume = False  # El usuario soltó el mouse
+        adjusting_volume = False  # The user released the mouse
 
 
-# Función para crear la grilla
+# Function to create the grid
 def create_game_grid(rows: int, cols: int, cellsize: int, pos: tuple[int, int]):
     start_x = pos[0]
     start_y = pos[1]
@@ -130,38 +130,38 @@ def create_game_grid(rows: int, cols: int, cellsize: int, pos: tuple[int, int]):
     return coor_grid
 
 
-# Función para inicializar la lógica del juego
+# Function to initialize the game logic
 def update_game_logic(rows: int, cols: int):
     gamelogic: list[list[str]] = []
     for _ in range(rows):
         row_x: list[str] = []
         for _ in range(cols):
-            row_x.append(" ")  # Espacio en blanco para celdas vacías
+            row_x.append(" ")  # Blank space for empty cells
         gamelogic.append(row_x)
     return gamelogic
 
 
-# Función para imprimir la lógica del juego en la consola
+# Function to print the game logic to the console
 def print_game_logic(p_game_logic: list[list[str]]):
     print("Player Grid".center(50))
     for row in p_game_logic:
         print(row)
 
 
-# Función para calcular el tamaño y la posición de la grilla
+# Function to calculate the size and position of the grid
 def grid_size(window: pygame.Surface, rows: int, cols: int, cellsize: int):
     screen_width, screen_height = window.get_size()
     grid_width = cols * cellsize
     grid_height = rows * cellsize
-    start_x = (screen_width - grid_width) // 2  # Centrado en X
-    start_y = screen_height - grid_height - 50  # 50 píxeles desde la parte inferior
+    start_x = (screen_width - grid_width) // 2  # Centered on X
+    start_y = screen_height - grid_height - 50  # 50 pixels from the bottom
     return start_x, start_y
 
 
-# Función para manejar los eventos del teclado
+# Function to handle keyboard events
 def handle_keyboard_event(event: pygame.event.Event, ask_return_menu: bool):
     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-        ask_return_menu = not ask_return_menu  # Alterna el menú con "Esc"
+        ask_return_menu = not ask_return_menu  # Toggle the menu with "Esc"
     return ask_return_menu
 
 
@@ -170,38 +170,38 @@ def draw_stats(
     font: pygame.font.Font,
     match: Match,
 ):
-    # Stats del jugador actual
+    # Stats of the current player
     current_stats = match.get_player_stats(0)
     enemy_stats = match.get_player_stats(1)
 
-    # Posición para stats del jugador actual (lado izquierdo)
+    # Position for stats of the current player (left side)
     player_stats_x = 50
     stats_y = 300
 
-    # Stats del jugador actual
+    # Stats of the current player
     stats_texts = [
         f"Tu tablero",
         f"Barcos hundidos: {current_stats['ships_sunk']}/{len(match.match_data['player_1']['fleet'])}",
         f"Barcos dañados: {current_stats['ships_damaged']}",
     ]
 
-    # Calcular el ancho máximo de los textos del jugador
+    # Calculate the maximum width of the player's texts
     max_width = max(font.size(text)[0] for text in stats_texts)
-    total_height = len(stats_texts) * 30  # 30 es el espaciado vertical entre líneas
+    total_height = len(stats_texts) * 30  # 30 is the vertical spacing between lines
 
-    # Configuración del fondo negro semi-transparente para jugador
-    background = pygame.Surface((max_width + 20, total_height + 20))  # +20 para padding
+    # Configuration of the semi-transparent black background for player
+    background = pygame.Surface((max_width + 20, total_height + 20))  # +20 for padding
     background.set_alpha(128)
     background.fill((0, 0, 0))
 
-    # Dibujamos el fondo para stats del jugador
+    # Draw the background for player stats
     window.blit(background, (player_stats_x - 10, stats_y - 10))
 
     for i, text in enumerate(stats_texts):
         text_surface = font.render(text, True, WHITE)
         window.blit(text_surface, (player_stats_x, stats_y + i * 30))
 
-    # Stats del enemigo (lado derecho)
+    # Stats of the enemy (right side)
     enemy_stats_x = window.get_width() - 250
 
     enemy_stats_texts = [
@@ -209,16 +209,16 @@ def draw_stats(
         f"Barcos hundidos: {enemy_stats['ships_sunk']}/{len(match.match_data['player_2']['fleet'])}",
     ]
 
-    # Calcular el ancho máximo de los textos del enemigo
+    # Calculate the maximum width of the enemy's texts
     enemy_max_width = max(font.size(text)[0] for text in enemy_stats_texts)
     enemy_total_height = len(enemy_stats_texts) * 30
 
-    # Configuración del fondo negro semi-transparente para enemigo
+    # Configuration of the semi-transparent black background for enemy
     enemy_background = pygame.Surface((enemy_max_width + 20, enemy_total_height + 20))
     enemy_background.set_alpha(128)
     enemy_background.fill((0, 0, 0))
 
-    # Dibujamos el fondo para stats del enemigo
+    # Draw the background for enemy stats
     window.blit(enemy_background, (enemy_stats_x - 10, stats_y - 10))
 
     for i, text in enumerate(enemy_stats_texts):
@@ -235,61 +235,59 @@ def board(match: Match):
     p_game_grid_start_pos = grid_size(game_surface, ROWS, COLS, CELLSIZE)
     p_game_grid = create_game_grid(ROWS, COLS, CELLSIZE, p_game_grid_start_pos)
 
-    # Cargar música de fondo
+    # Load background music
     pygame.mixer.init()
     pygame.mixer.music.load("assets/background_music_game.mp3")
 
-    # Reproducir música de fondo
-    pygame.mixer.music.play(loops=-1)  # Reproducir en bucle
+    # Play background music
+    pygame.mixer.music.play(loops=-1)  # Play in loop
     pygame.mixer.music.set_volume(
         Settings.get(SettingsKey.VOLUME) * 0.5
-    )  # volumen al 50%
+    )  # volume at 50%
 
     if not pygame.mixer.get_init():
-        print("Error al cargar la música de fondo")
+        print("Error loading background music")
 
-    # Cargar el video de fondo
+    # Load the background video
     video_clip = cast(VideoClipProtocol, VideoFileClip("assets/background.mp4"))
-    start_time = time.time()  # Tiempo de inicio de la reproducción
+    start_time = time.time()  # Start time of the playback
 
     overlay_surface = pygame.Surface(game_surface.get_size())
     overlay_surface.set_alpha(140)
     overlay_surface.fill((0, 0, 0))
 
-    # Cargar imagen del menú
+    # Load menu image
     gear_img = pygame.image.load("assets/gear.png")
-    gear_img = pygame.transform.scale(
-        gear_img, (50, 50)
-    )  # Ajustar tamaño si es necesario
+    gear_img = pygame.transform.scale(gear_img, (50, 50))  # Adjust size if necessary
 
-    # Inicializar la fuente y el estado del menú
+    # Initialize the font and menu state
     font = pygame.font.SysFont(None, 36)
-    ask_return_menu = False  # Controla cuándo mostrar la pregunta de volver al menú
+    ask_return_menu = False  # Controls when to show the return to menu question
 
-    # Crear una superficie semi-transparente para opacar la grilla
+    # Create a semi-transparent surface to obscure the grid
     overlay_surface = pygame.Surface(game_surface.get_size())
-    overlay_surface.set_alpha(140)  # 128 es un valor de transparencia (0-255)
-    overlay_surface.fill((0, 0, 0))  # Color de la opacidad, en este caso negro
+    overlay_surface.set_alpha(140)  # 128 is a transparency value (0-255)
+    overlay_surface.fill((0, 0, 0))  # Color of the opacity, in this case black
 
     game_board = GameBoard(match, p_game_grid)
-    cpu = CpuAi(match)  # Instanciamos la CPU
+    cpu = CpuAi(match)  # Instantiate the CPU
 
     current_player = match.get_current_player_index()
     waiting_for_turn_change = False
     last_move_time = 0
     winner = None
     winner_show_start_time = 0
-    cpu_thinking_start_time = 0  # Para controlar el delay de la CPU
-    score_saved = False  # Nueva variable para controlar si ya guardamos el score
+    cpu_thinking_start_time = 0  # To control the CPU delay
+    score_saved = False  # New variable to control if we already saved the score
 
     options_menu = OptionsMenu()
 
-    # Cargar los efectos de sonido
+    # Load sound effects
     hit_sound = pygame.mixer.Sound("assets/hit.mp3")
     miss_sound = pygame.mixer.Sound("assets/miss.mp3")
     sunk_sound = pygame.mixer.Sound("assets/sunk.mp3")
 
-    # Ajustar volumen inicial de los efectos
+    # Adjust initial volume of the effects
     hit_sound.set_volume(Settings.get(SettingsKey.VOLUME))
     miss_sound.set_volume(Settings.get(SettingsKey.VOLUME))
     sunk_sound.set_volume(Settings.get(SettingsKey.VOLUME))
@@ -303,7 +301,7 @@ def board(match: Match):
             winner = match.get_winner()
             if winner is not None:
                 winner_show_start_time = current_time
-                # Si el ganador es el jugador humano (número 0) y no guardamos el score todavía
+                # If the winner is the human player (number 0) and we haven't saved the score yet
                 if winner["number"] == 0 and not score_saved:
                     Scoreboard.save_score(
                         {"name": winner["name"], "score": winner["score"]}
@@ -313,8 +311,8 @@ def board(match: Match):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run_game = False
-                pygame.quit()  # Cerramos Pygame al cerrar la ventana
-                sys.exit()  # Cerramos el programa
+                pygame.quit()  # Close Pygame when closing the window
+                sys.exit()  # Close the program
 
             options_menu.handle_keyboard(event)
 
@@ -322,7 +320,7 @@ def board(match: Match):
                 mouse_pos = pygame.mouse.get_pos()
 
                 if options_menu.handle_click(mouse_pos):
-                    return  # Volver al menú
+                    return  # Return to the menu
 
                 if not options_menu.ask_return_menu:
                     if (
@@ -344,10 +342,10 @@ def board(match: Match):
 
         if (
             current_player == 1 and not waiting_for_turn_change and not winner
-        ):  # Turno de la CPU
-            if cpu_thinking_start_time == 0:  # Si recién empieza el turno de la CPU
+        ):  # CPU's turn
+            if cpu_thinking_start_time == 0:  # If the CPU's turn just started
                 cpu_thinking_start_time = current_time
-            elif current_time - cpu_thinking_start_time >= 1:  # Si ya pasó 1 segundo
+            elif current_time - cpu_thinking_start_time >= 1:  # If 1 second has passed
                 shot_result = cpu.play_turn()
                 if shot_result == ShotResult.MISS:
                     miss_sound.play()
@@ -357,14 +355,14 @@ def board(match: Match):
                     hit_sound.play()
                 elif shot_result == ShotResult.SUNK:
                     sunk_sound.play()
-                cpu_thinking_start_time = 0  # Reseteamos para el próximo turno
+                cpu_thinking_start_time = 0  # Reset for the next turn
 
         # Check if 2 seconds have passed since the last move
         if waiting_for_turn_change and current_time - last_move_time >= 2:
             current_player = 1 - current_player
             waiting_for_turn_change = False
 
-        # Reproducir el video de fondo
+        # Play the background video
         current__video_time = time.time() - start_time
         if current__video_time >= video_clip.duration:
             start_time = time.time()
@@ -378,7 +376,7 @@ def board(match: Match):
 
         game_surface.blit(frame_surface, (0, 0))
 
-        # Mostrar el engranaje de configuración
+        # Show the configuration gear
         draw_menu_button(game_surface, gear_img)
 
         # Draw the current player title centered at the top
@@ -394,7 +392,7 @@ def board(match: Match):
         text_rect.centerx = game_surface.get_width() // 2
         text_rect.top = 10
 
-        # Fondo negro para el texto del jugador actual
+        # Black background for the current player text
         background = pygame.Surface((text_rect.width + 20, text_rect.height + 10))
         background.set_alpha(128)
         background.fill((0, 0, 0))
@@ -405,7 +403,7 @@ def board(match: Match):
             game_surface, enemy_player=enemy_player, active=not waiting_for_turn_change
         )
 
-        # Agregar esta línea antes del if winner
+        # Add this line before the if winner
         draw_stats(game_surface, font, match)
 
         # If there is a winner, show message and count time
@@ -417,9 +415,9 @@ def board(match: Match):
             text_rect.centerx = game_surface.get_width() // 2
             text_rect.centery = game_surface.get_height() // 2
 
-            # Fondo negro para el mensaje de victoria
+            # Black background for the victory message
             background = pygame.Surface((text_rect.width + 40, text_rect.height + 20))
-            background.set_alpha(160)  # Un poco más opaco para el mensaje de victoria
+            background.set_alpha(160)  # A little more opaque for the victory message
             background.fill((0, 0, 0))
             game_surface.blit(background, (text_rect.x - 20, text_rect.y - 10))
             game_surface.blit(winner_text, text_rect)
@@ -437,6 +435,6 @@ def board(match: Match):
 
         pygame.display.update()
 
-    # Cerrar Pygame solo cuando se desee salir del juego
+    # Close Pygame only when you want to exit the game
     pygame.quit()
     sys.exit()

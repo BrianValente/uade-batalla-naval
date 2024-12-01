@@ -4,12 +4,11 @@ from typing import Tuple
 from .ui import Button
 from .utils import Settings, SettingsKey
 
-# Colores
-DARK_BLUE = (0, 0, 139)  # Azul oscuro para el fondo
-LIGHT_BLUE = (0, 191, 255)  # Azul claro para hover
-WHITE = (255, 255, 255)  # Blanco para texto
-GRAY = (100, 100, 100)  # Gris para la barra de volumen
-BLUE = (0, 0, 255)  # Azul para la barra de volumen llena
+DARK_BLUE = (0, 0, 139)
+LIGHT_BLUE = (0, 191, 255)
+WHITE = (255, 255, 255)
+GRAY = (100, 100, 100)
+BLUE = (0, 0, 255)
 
 
 def get_font(size: int) -> pygame.font.Font:
@@ -22,10 +21,10 @@ class VolumeSlider:
         self.is_dragging = False
 
     def draw(self, surface: pygame.Surface):
-        # Dibujar barra base
+        # Draw base bar
         pygame.draw.rect(surface, GRAY, self.rect)
 
-        # Dibujar barra de volumen
+        # Draw volume bar
         filled_width = int(Settings.get(SettingsKey.VOLUME) * self.rect.width)
         filled_rect = pygame.Rect(
             self.rect.x, self.rect.y, filled_width, self.rect.height
@@ -55,16 +54,16 @@ def settings_screen() -> None:
     screen = pygame.display.get_surface()
     clock = pygame.time.Clock()
 
-    # Cargar y escalar imagen de volumen
+    # Load and scale volume image
     volume_img = pygame.image.load("assets/volume.png")
     volume_img = pygame.transform.scale(volume_img, (50, 30))
 
-    # Crear slider de volumen
+    # Create volume slider
     volume_slider = VolumeSlider(
         x=screen.get_width() // 2 - 150, y=300, width=300, height=20  # Centrado
     )
 
-    # Crear botón de volver
+    # Create back button
     back_button = Button(
         image=None,
         pos=(640, 650),
@@ -77,23 +76,23 @@ def settings_screen() -> None:
     while True:
         screen.fill(DARK_BLUE)
 
-        # Título
+        # Title
         title_text = get_font(50).render("CONFIGURACIÓN", True, WHITE)
         title_rect = title_text.get_rect(center=(640, 100))
         screen.blit(title_text, title_rect)
 
-        # Texto de volumen
+        # Volume text
         volume_text = get_font(30).render("Volumen", True, WHITE)
         volume_text_rect = volume_text.get_rect(center=(screen.get_width() // 2, 250))
         screen.blit(volume_text, volume_text_rect)
 
-        # Icono de volumen
+        # Volume icon
         screen.blit(volume_img, (volume_slider.rect.x - 60, volume_slider.rect.y - 5))
 
-        # Dibujar slider
+        # Draw slider
         volume_slider.draw(screen)
 
-        # Mostrar porcentaje
+        # Show percentage
         percentage = int(Settings.get(SettingsKey.VOLUME) * 100)
         percentage_text = get_font(25).render(f"{percentage}%", True, WHITE)
         percentage_rect = percentage_text.get_rect(
@@ -101,12 +100,12 @@ def settings_screen() -> None:
         )
         screen.blit(percentage_text, percentage_rect)
 
-        # Actualizar botón de volver
+        # Update back button
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         back_button.changeColor(MENU_MOUSE_POS)
         back_button.update(screen)
 
-        # Eventos
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
