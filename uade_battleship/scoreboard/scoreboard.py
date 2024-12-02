@@ -13,15 +13,19 @@ class Scoreboard:
 
     @staticmethod
     def get_scoreboard() -> List[Score]:
-        data = FileStorage.read_file(Scoreboard.SCOREBOARD_FILE)
-        if data is None:
-            return []
+        try:
+            data = FileStorage.read_file(Scoreboard.SCOREBOARD_FILE)
+            if data is None:
+                return []
 
-        json_data = json.loads(data)
-        scores: List[Score] = []
-        for score in json_data:
-            scores.append(Score(name=score["name"], score=score["score"]))
-        return scores
+            json_data = json.loads(data)
+            scores: List[Score] = []
+            for score in json_data:
+                scores.append(Score(name=score["name"], score=score["score"]))
+            return scores
+        except Exception as e:
+            print(f"Error getting scoreboard: {e}")
+            return []
 
     @staticmethod
     def save_score(score: Score) -> None:
@@ -36,4 +40,7 @@ class Scoreboard:
         scores.sort(key=lambda x: x["score"], reverse=True)
 
         json_data = json.dumps([dict(s) for s in scores])
-        FileStorage.write_file(Scoreboard.SCOREBOARD_FILE, json_data)
+        try:
+            FileStorage.write_file(Scoreboard.SCOREBOARD_FILE, json_data)
+        except Exception as e:
+            print(f"Error saving scoreboard: {e}")

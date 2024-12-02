@@ -48,7 +48,11 @@ class Match:
         data = FileStorage.read_file("match.json")
         if data is None:
             return None
-        return Match.from_json(data)
+        try:
+            return Match.from_json(data)
+        except Exception as e:
+            print(f"Error loading match: {e}")
+            return None
 
     def get_players(self) -> tuple[str, str]:
         return self.match_data["player_1"]["name"], self.match_data["player_2"]["name"]
@@ -211,13 +215,19 @@ class Match:
         Save the match data to a file.
         """
         match_data_json = self.get_json()
-        FileStorage.write_file("match.json", match_data_json)
+        try:
+            FileStorage.write_file("match.json", match_data_json)
+        except Exception as e:
+            print(f"Error saving match: {e}")
 
     def delete_save(self):
         """
         Delete the match save file.
         """
-        FileStorage.delete_file("match.json")
+        try:
+            FileStorage.delete_file("match.json")
+        except Exception as e:
+            print(f"Error deleting match: {e}")
 
     @staticmethod
     def from_json(data: str) -> "Match":
