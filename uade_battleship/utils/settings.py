@@ -15,16 +15,27 @@ class Settings:
 
     @classmethod
     def _load_settings(cls):
-        content = FileStorage.read_file(cls.SETTINGS_FILE)
-        if content:
-            cls._settings = json.loads(content)
-        else:
-            cls._settings = {key.value: value for key, value in cls._defaults.items()}
-            cls._save_settings()
+        try:
+            content = FileStorage.read_file(cls.SETTINGS_FILE)
+            if content:
+                cls._settings = json.loads(content)
+            else:
+                cls.set_and_save_default()
+        except Exception as e:
+            print(f"Error loading settings: {e}")
+            cls.set_and_save_default()
+
+    @classmethod
+    def set_and_save_default(cls):
+        cls._settings = {key.value: value for key, value in cls._defaults.items()}
+        cls._save_settings()
 
     @classmethod
     def _save_settings(cls):
-        FileStorage.write_file(cls.SETTINGS_FILE, json.dumps(cls._settings))
+        try:
+            FileStorage.write_file(cls.SETTINGS_FILE, json.dumps(cls._settings))
+        except Exception as e:
+            print(f"Error saving settings: {e}")
 
     @classmethod
     def get(cls, key: SettingsKey) -> Any:
