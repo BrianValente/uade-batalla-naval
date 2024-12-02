@@ -140,6 +140,7 @@ def ship_placement(match: Match) -> bool:
         text="Player",
         base_color=Color.WHITE,
         selected_color=Color.GREEN,
+        regex=r"^[a-zA-Z0-9]{1,10}$",
     )
 
     # Create continue button
@@ -208,7 +209,8 @@ def ship_placement(match: Match) -> bool:
 
         # Check if all ships are placed in a valid way
         # There should be no overlap between ships.
-        all_valid = True
+        player_name_not_empty = player_name_input.get_text() != ""
+        all_valid = player_name_not_empty
         for i, ship in enumerate(ships):
             # Get all coordinates occupied by the first ship
             ship_coords: set[tuple[int, int]] = set()
